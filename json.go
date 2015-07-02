@@ -13,6 +13,17 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 )
 
+var conn *sql.DB
+
+func init() {
+	var err error
+	conn, err = sql.Open("mysql", "root@tcp(localhost:3306)/logs")
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+}
+
 var jsonString string = `{"id": "1235", "ip": "1.2.3.4", "advertiser_id": 8}`
 
 type click struct {
@@ -50,13 +61,6 @@ func insertinto(w http.ResponseWriter, r *http.Request) {
 	}
 	fmt.Println(p)
 
-	conn, err := sql.Open("mysql", "root@tcp(localhost:3306)/logs")
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-	defer conn.Close()
-
 	_, err = conn.Exec("INSERT INTO clicks(id, advertiser_id, site_id, ip, ios_ifa) VALUES(?, ?, ?, ?, ?)", p.ID, p.AdvertiserID, p.SiteID, p.IP, p.IosIfa)
 	if err != nil {
 		fmt.Println(err)
@@ -77,13 +81,6 @@ func deletefrom(w http.ResponseWriter, r *http.Request) {
 	}
 	fmt.Println(p)
 
-	conn, err := sql.Open("mysql", "root@tcp(localhost:3306)/logs")
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-	defer conn.Close()
-
 	_, err = conn.Exec("DELETE FROM clicks(id, advertiser_id, site_id, ip, ios_ifa) WHERE(?, ?, ?, ?, ?)", p.ID, p.AdvertiserID, p.SiteID, p.IP, p.IosIfa)
 	if err != nil {
 		fmt.Println(err)
@@ -103,25 +100,6 @@ func retrieve(w http.ResponseWriter, r *http.Request) {
 	//fmt.Fprint(w, "\nretrieving from clicks")
 	reading, _ := ioutil.ReadAll(r.Body)
 	fmt.Println(string(reading))
-
-	// var ID string
-	// var AdvertiserID int
-	// var SiteID int
-	// var IP string
-	// var IosIfa string
-
-	// err := json.Unmarshal(reading, &ID)
-	// if err != nil {
-	// 	fmt.Printf("Error running Unmarshal: %s", err)
-	// }
-	// fmt.Println(ID)
-
-	conn, err := sql.Open("mysql", "root@tcp(localhost:3306)/logs")
-	if err != nil {
-		fmt.Printf("Error running Open: %s", err)
-		return
-	}
-	defer conn.Close()
 
 	rows, err := conn.Query("SELECT id, advertiser_id, site_id, ip, ios_ifa FROM clicks WHERE id=?", &ID)
 	if err != nil {

@@ -1,3 +1,1 @@
-# topsecret
-this will eventually be semi-useful (maybe)
-this is a README file
+this is a test library for collbrating and also building a dummy web service and api

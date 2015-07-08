@@ -43,7 +43,7 @@ func main() {
 func myHandler() *mux.Router {
 	mx := mux.NewRouter()
 	mx.HandleFunc("/", Poster).Methods("POST")
-	mx.HandleFunc("/{id}", Geter).Methods("GET")
+	mx.HandleFunc("/{id}", GET).Methods("GET")
 	return mx
 }
 
@@ -59,24 +59,29 @@ type Click struct {
 	WindowsAid   string
 }
 
-//the function which handle the get methods
-//get the json data form from database and server to browser
-func Geter(w http.ResponseWriter, r *http.Request) {
+//the function that handles the GET method
+//retrieve the json data form from database and the server to the browser
+func GET(writer http.ResponseWriter, reader *http.Request) {
 	///get the id from the name of maps
-	id := mux.Vars(r)["id"]
+	id := mux.Vars(reader)["id"]
 
 	//select data from sql databases according to the id
 	row := db.QueryRow("SELECT id, advertiser_id, site_id, ip, ios_ifa FROM clicks WHERE id=?", id)
 
 	//store the data from sql database to the temp struct
 	var c Click
-	err = row.Scan(&c.ID, &c.AdvertiserID, &c.SiteID, &c.IP, &c.IosIfa)
-	if err != nil {
-		fmt.Println(err)
+	err := row.Scan(&c.ID, &c.AdvertiserID, &c.SiteID, &c.IP, &c.IosIfa)
+	if err == sql.ErrNoRows {
+		io.WriteString(writer, "Error 404")
+		writer.WriteHeader(http.StatusNotFound)
+		return
+	} else if errs != nil {
+		io.WriteString(writer, "Error 500")
+		writer.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
-	//marshal the data from temp struct to the json
+	//marshal the data from the temp struct to json
 	bytes, errs := json.Marshal(&c)
 	if errs != nil {
 		fmt.Println(errs)
@@ -84,7 +89,8 @@ func Geter(w http.ResponseWriter, r *http.Request) {
 	}
 
 	//output the raw bytes to the browser
-	io.WriteString(w, string(bytes))
+	io.WriteString(writer, string(bytes))
+	writer.WriteHeader(http.StatusOK)
 
 }
 
@@ -112,8 +118,8 @@ func Poster(w http.ResponseWriter, r *http.Request) {
 	ip := r.RemoteAddr
 
 	//store the data from the struct to the sql databases
-	_, errs = db.Exec("INSERT INTO clicks(id, advertiser_id, site_id, ip, ios_ifa) VALUES(?, ?, ?, ?, ?)",
-		id, point.AdvertiserID, point.SiteID, ip, point.IosIfa)
+	_, errs = db.Exec("INSERT INTO clicks(id, advertiser_id, site_id, ip, ios_ifa, google_aid, windows_aid ) VALUES(?, ?, ?, ?, ?, ?, ?)",
+		id, point.AdvertiserID, point.SiteID, ip, point.IosIfa, point.google_aid, point.windows_aid)
 
 	if errs != nil {
 		fmt.Println(errs)

@@ -20,8 +20,9 @@ func makeRandomNumbers(num int) []int {
 	return list
 }
 
-func merge(left, right []int) []int {
+func merge(left, right []int) []int, int {
 	mergedArray := make([]int, 0, len(left)+len(right))
+	inversions := 0
 
 	for len(left) > 0 || len(right) > 0 {
 		if len(left) == 0 {
@@ -48,18 +49,20 @@ func mergeSort(list []int) []int {
 	midpoint := len(list) / 2
 	left := mergeSort(list[:midpoint])
 	right := mergeSort(list[midpoint:])
-	return merge(left, right)
+	sorted := merge(left, right)
+
+	return sorted
 }
 
 func main() {
 
-	b := time.Now().UTC().UnixNano() % 1000000000
+	b := time.Now().UTC().UnixNano() % 10
 
 	rand.Seed(b)
 
 	start := time.Now()
 
-	a := makeRandomNumbers(10)
+	a := makeRandomNumbers(100)
 
 	//fmt.Println(a)
 

@@ -59,32 +59,37 @@ type Click struct {
 	WindowsAid   string
 }
 
-//the function that handles the GET method
-//retrieve the json data form from database and the server to the browser
+//function that handles the GET method
+//retrieve the json data form from database/server and output to the browser
 func GET(writer http.ResponseWriter, reader *http.Request) {
-	///get the id from the name of maps
+	///get the id from the hashmap
 	id := mux.Vars(reader)["id"]
 
 	//select data from sql databases according to the id
-	row := db.QueryRow("SELECT id, advertiser_id, site_id, ip, ios_ifa FROM clicks WHERE id=?", id)
+	row := db.QueryRow("SELECT id, advertiser_id, site_id, ip, ios_ifa, google_aid, windows_aid  FROM clicks WHERE id=?", id)
 
-	//store the data from sql database to the temp struct
+	//store the data from sql database in a temp struct
 	var c Click
-	err := row.Scan(&c.ID, &c.AdvertiserID, &c.SiteID, &c.IP, &c.IosIfa)
+	err := row.Scan(&c.ID, &c.AdvertiserID, &c.SiteID, &c.IP, &c.IosIfa, &c.GoogleAid, &c.WindowsAid)
+
+	//check for errors in scan  (404 and 500)
 	if err == sql.ErrNoRows {
-		io.WriteString(writer, "Error 404")
+		fmt.Println(err)
+		io.WriteString(writer, "{\"message\" : \"Error 404\"}")
+		io.WriteString(writer, "{\"httpstatus\" : \"404\"}")
 		writer.WriteHeader(http.StatusNotFound)
 		return
-	} else if errs != nil {
+	} else if err != nil {
+		fmt.Println(err)
 		io.WriteString(writer, "Error 500")
 		writer.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
 	//marshal the data from the temp struct to json
-	bytes, errs := json.Marshal(&c)
-	if errs != nil {
-		fmt.Println(errs)
+	bytes, err := json.Marshal(&c)
+	if err != nil {
+		fmt.Println(err)
 		return
 	}
 
@@ -119,7 +124,7 @@ func Poster(w http.ResponseWriter, r *http.Request) {
 
 	//store the data from the struct to the sql databases
 	_, errs = db.Exec("INSERT INTO clicks(id, advertiser_id, site_id, ip, ios_ifa, google_aid, windows_aid ) VALUES(?, ?, ?, ?, ?, ?, ?)",
-		id, point.AdvertiserID, point.SiteID, ip, point.IosIfa, point.google_aid, point.windows_aid)
+		id, point.AdvertiserID, point.SiteID, ip, point.IosIfa, point.GoogleAid, point.WindowsAid)
 
 	if errs != nil {
 		fmt.Println(errs)

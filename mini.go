@@ -60,7 +60,8 @@ type Click struct {
 }
 
 type Validation struct {
-	Message    string
+	ErrMessage string
+	Id         string
 	HttpStatus string
 }
 
@@ -101,23 +102,23 @@ func Poster(w http.ResponseWriter, r *http.Request) {
 	bytes, errs := ioutil.ReadAll(r.Body)
 	if errs != nil {
 		errString := fmt.Sprintf("buffer overflow %s", errs)
-		reponse(w, http.StatusBadRequest, errString)
+		reponse(w, errString, "", http.StatusBadRequest)
 		return
 	}
 
 	//store the raw bytes to a temporary struct
 	var point Click
 	errs = json.Unmarshal(bytes, &point)
-	fmt.Println(errs)
 	if errs != nil {
 		errString := fmt.Sprintf(" invalid Json format: %s", errs)
-		reponse(w, http.StatusBadRequest, errString)
+		reponse(w, errString, "", http.StatusBadRequest)
 		return
 	}
 
 	//validate the ad-id and reponse corresponding http code and json error validation message
 	if point.AdvertiserID == 0 || point.SiteID == 0 {
-		reponse(w, http.StatusBadRequest, "your advertiserID or site ID may equals to 0")
+		errString := "your advertiserID or site ID may equals to 0"
+		reponse(w, errString, "", http.StatusBadRequest)
 		return
 	}
 
@@ -130,20 +131,20 @@ func Poster(w http.ResponseWriter, r *http.Request) {
 		id, point.AdvertiserID, point.SiteID, ip, point.IosIfa)
 
 	if errs != nil {
-		errString := fmt.Sprintf("bad insertion: %s", errs)
-		reponse(w, http.StatusBadRequest, errString)
+		errString := "sorry, there is an error"
+		reponse(w, errString, "", http.StatusInternalServerError)
 		return
 	}
 
 	//at the end of function the post data is success so output 200 code and the id for it
-	reponse(w, http.StatusOK, id)
+	reponse(w, "", id, http.StatusOK)
 	return
 }
 
-func reponse(w http.ResponseWriter, status int, message string) {
+func reponse(w http.ResponseWriter, errMessage string, id string, status int) {
 	w.WriteHeader(status)
 
-	validate := Validation{message, strconv.Itoa(status)}
+	validate := Validation{errMessage, id, strconv.Itoa(status)}
 	bytes, errs := json.Marshal(&validate)
 	if errs != nil {
 		fmt.Println(errs) // this errors is only for execution no need to output to user

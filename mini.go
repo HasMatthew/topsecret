@@ -59,7 +59,7 @@ type Click struct {
 	WindowsAid   string
 }
 
-type Validation struct {
+type PostReponses struct {
 	ErrMessage string
 	Id         string
 	HttpStatus string
@@ -144,7 +144,7 @@ func Poster(w http.ResponseWriter, r *http.Request) {
 func reponse(w http.ResponseWriter, errMessage string, id string, status int) {
 	w.WriteHeader(status)
 
-	validate := Validation{errMessage, id, strconv.Itoa(status)}
+	validate := PostReponses{errMessage, id, strconv.Itoa(status)}
 	bytes, errs := json.Marshal(&validate)
 	if errs != nil {
 		fmt.Println(errs) // this errors is only for execution no need to output to user

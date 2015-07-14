@@ -9,6 +9,8 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
+	"log"
+	"log/syslog"
 	mrand "math/rand"
 	"net/http"
 	"strconv"
@@ -18,13 +20,21 @@ import (
 	"github.com/gorilla/mux"
 )
 
-var db *sql.DB
+var (
+	logWriter *syslog.Writer
+	db        *sql.DB
+)
 
 func init() {
 	var err error
+	logWriter, err = syslog.Dial("tcp", "localhost:10514", syslog.LOG_EMERG, "mini---porject")
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	db, err = sql.Open("mysql", "root@tcp(localhost:3306)/logs")
 	if err != nil {
-		fmt.Println(err)
+		logWriter.Err("can't open databases")
 		return
 	}
 }
@@ -37,6 +47,9 @@ func main() {
 	}
 
 	server.ListenAndServe()
+
+	logWriter.Close()
+	db.Close()
 }
 
 //build and return the server's handler
@@ -59,7 +72,7 @@ type Click struct {
 	WindowsAid   string
 }
 
-type PostReponses struct {
+type PostResponses struct {
 	ErrMessage string
 	Id         string
 	HttpStatus string
@@ -97,12 +110,14 @@ func Geter(w http.ResponseWriter, r *http.Request) {
 //the function which handle the post method
 //post the json data from broswer to the server and sql databases
 func Poster(w http.ResponseWriter, r *http.Request) {
+	//time when do request
+	RequestStart := time.Now()
 
 	//get the raw bytes of input data
 	bytes, errs := ioutil.ReadAll(r.Body)
 	if errs != nil {
 		errString := fmt.Sprintf("buffer overflow %s", errs)
-		reponse(w, errString, "", http.StatusBadRequest)
+		response(w, errString, "", http.StatusBadRequest)
 		return
 	}
 
@@ -111,14 +126,16 @@ func Poster(w http.ResponseWriter, r *http.Request) {
 	errs = json.Unmarshal(bytes, &point)
 	if errs != nil {
 		errString := fmt.Sprintf(" invalid Json format: %s", errs)
-		reponse(w, errString, "", http.StatusBadRequest)
+		response(w, errString, "", http.StatusBadRequest)
+		logWriter.Err(errString)
 		return
 	}
 
-	//validate the ad-id and reponse corresponding http code and json error validation message
+	//validate the input and log error input message
 	if point.AdvertiserID == 0 || point.SiteID == 0 {
 		errString := "your advertiserID or site ID may equals to 0"
-		reponse(w, errString, "", http.StatusBadRequest)
+		response(w, errString, "", http.StatusBadRequest)
+		logWriter.Err(errString)
 		return
 	}
 
@@ -126,25 +143,36 @@ func Poster(w http.ResponseWriter, r *http.Request) {
 	id := Id(point.AdvertiserID)
 	ip := r.RemoteAddr
 
-	//store the data from the struct to the sql databases
+	//store the data from the struct to the sql databases and log the error or latency time
+	QueryStart := time.Now()
+
 	_, errs = db.Exec("INSERT INTO clicks(id, advertiser_id, site_id, ip, ios_ifa) VALUES(?, ?, ?, ?, ?)",
 		id, point.AdvertiserID, point.SiteID, ip, point.IosIfa)
 
 	if errs != nil {
 		errString := "sorry, there is an error"
-		reponse(w, errString, "", http.StatusInternalServerError)
+		response(w, errString, "", http.StatusInternalServerError)
+		errString = fmt.Sprintf("database connection error : %s", errs)
+		logWriter.Err(errString)
 		return
 	}
 
-	//at the end of function the post data is success so output 200 code and the id for it
-	reponse(w, "", id, http.StatusOK)
-	return
+	responseTime("the time for inserting data to clicks table is ", QueryStart)
+
+	//sucess and log the request latency
+	response(w, "", id, http.StatusOK)
+	responseTime("the time for this Post request is ", RequestStart)
 }
 
-func reponse(w http.ResponseWriter, errMessage string, id string, status int) {
+func responseTime(message string, startTime time.Time) {
+	responseDuration := time.Since(startTime)
+	logWriter.Info(message + responseDuration.String())
+}
+
+func response(w http.ResponseWriter, errMessage string, id string, status int) {
 	w.WriteHeader(status)
 
-	validate := PostReponses{errMessage, id, strconv.Itoa(status)}
+	validate := PostResponses{errMessage, id, strconv.Itoa(status)}
 	bytes, errs := json.Marshal(&validate)
 	if errs != nil {
 		fmt.Println(errs) // this errors is only for execution no need to output to user

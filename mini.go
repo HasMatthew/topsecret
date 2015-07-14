@@ -9,6 +9,8 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
+	"log"
+	"log/syslog"
 	mrand "math/rand"
 	"net/http"
 	"strconv"
@@ -18,25 +20,44 @@ import (
 	"github.com/gorilla/mux"
 )
 
-var db *sql.DB
+var (
+	db     *sql.DB
+	logger *syslog.Writer
+)
 
 func init() {
+
+	// seed the random generator to generate IDs
+	rand.Seed(time.Now().UTC().UnixNano())
+
 	var err error
+	logger, err = syslog.Dial("tcp", "localhost:10514", syslog.LOG_ERR, "---MINI---")
+	if err != nil {
+		log.Fatal(err)
+	} else {
+		log.SetOutput(logger)
+	}
+
 	db, err = sql.Open("mysql", "root@tcp(localhost:3306)/logs")
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
+
 }
 
-//build and lauch the server
+// build/lauch the server and prepare to write logs
 func main() {
+
 	server := http.Server{
 		Addr:    ":5000",
 		Handler: myHandler(),
 	}
 
 	server.ListenAndServe()
+
+	db.Close()
+	logger.Close()
 }
 
 //build and return the server's handler
@@ -62,6 +83,10 @@ type Click struct {
 //function that handles the GET method
 //retrieve the json data form from database/server and output to the browser
 func GET(writer http.ResponseWriter, reader *http.Request) {
+
+	// time the method
+	var starttime = time.Now()
+
 	///get the id from the hashmap
 	id := mux.Vars(reader)["id"]
 
@@ -78,11 +103,15 @@ func GET(writer http.ResponseWriter, reader *http.Request) {
 		io.WriteString(writer, "{\"message\" : \"Error 404\"}")
 		io.WriteString(writer, "{\"httpstatus\" : \"404\"}")
 		writer.WriteHeader(http.StatusNotFound)
+		log.Print("{\"message\" : \"Error 404\"}, ")
+		log.Println("{\"httpstatus\" : \"404\"}")
 		return
 	} else if err != nil {
 		fmt.Println(err)
 		io.WriteString(writer, "Error 500")
 		writer.WriteHeader(http.StatusInternalServerError)
+		log.Print("{\"message\" : \"Error 500\"}, ")
+		log.Println("{\"httpstatus\" : \"500\"}")
 		return
 	}
 
@@ -96,6 +125,12 @@ func GET(writer http.ResponseWriter, reader *http.Request) {
 	//output the raw bytes to the browser
 	io.WriteString(writer, string(bytes))
 	writer.WriteHeader(http.StatusOK)
+
+	// log the event
+	log.Println("GET:", c.ID)
+
+	//log the time
+	log.Println("GET: took", time.Now().Sub(starttime), "to execute")
 
 }
 

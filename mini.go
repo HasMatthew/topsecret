@@ -26,21 +26,22 @@ var (
 )
 
 func init() {
-
-	// seed the random generator to generate IDs
-	mrand.Seed(time.Now().UTC().UnixNano())
-
 	var err error
+	//set up the logwriter
 	logWriter, err = syslog.Dial("tcp", "localhost:10514", syslog.LOG_EMERG, "mini---porject")
 	if err != nil {
 		log.Fatal(err)
 	}
 
+	//set up the database
 	db, err = sql.Open("mysql", "root@tcp(localhost:3306)/logs")
 	if err != nil {
 		logWriter.Err("can't open databases")
 		return
 	}
+
+	// seed the random generator to generate IDs
+	mrand.Seed(time.Now().UTC().UnixNano())
 
 }
 

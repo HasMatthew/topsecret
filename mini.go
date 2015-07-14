@@ -26,6 +26,10 @@ var (
 )
 
 func init() {
+
+	// seed the random generator to generate IDs
+	mrand.Seed(time.Now().UTC().UnixNano())
+
 	var err error
 	logWriter, err = syslog.Dial("tcp", "localhost:10514", syslog.LOG_EMERG, "mini---porject")
 	if err != nil {
@@ -37,10 +41,12 @@ func init() {
 		logWriter.Err("can't open databases")
 		return
 	}
+
 }
 
-//build and lauch the server
+// build/lauch the server and prepare to write logs
 func main() {
+
 	server := http.Server{
 		Addr:    ":5000",
 		Handler: myHandler(),
@@ -81,6 +87,10 @@ type PostResponses struct {
 //function that handles the GET method
 //retrieve the json data form from database/server and output to the browser
 func GET(writer http.ResponseWriter, reader *http.Request) {
+
+	// time the method
+	var starttime = time.Now()
+
 	///get the id from the hashmap
 	id := mux.Vars(reader)["id"]
 
@@ -98,11 +108,15 @@ func GET(writer http.ResponseWriter, reader *http.Request) {
 		io.WriteString(writer, "{\"message\" : \"Error 404\"}")
 		io.WriteString(writer, "{\"httpstatus\" : \"404\"}")
 		writer.WriteHeader(http.StatusNotFound)
+		log.Print("{\"message\" : \"Error 404\"}, ")
+		log.Println("{\"httpstatus\" : \"404\"}")
 		return
 	} else if err != nil {
 		fmt.Println(err)
 		io.WriteString(writer, "Error 500")
 		writer.WriteHeader(http.StatusInternalServerError)
+		log.Print("{\"message\" : \"Error 500\"}, ")
+		log.Println("{\"httpstatus\" : \"500\"}")
 		return
 	}
 
@@ -116,6 +130,12 @@ func GET(writer http.ResponseWriter, reader *http.Request) {
 	//output the raw bytes to the browser
 	io.WriteString(writer, string(bytes))
 	writer.WriteHeader(http.StatusOK)
+
+	// log the event
+	log.Println("GET:", c.ID)
+
+	//log the time
+	log.Println("GET: took", time.Now().Sub(starttime), "to execute")
 
 }
 
@@ -133,7 +153,7 @@ func Poster(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	//store the raw bytes to a temporary struct
+	//store the raw bytes to a temporary struct and log the Json invalid format
 	var point Click
 	errs = json.Unmarshal(bytes, &point)
 	if errs != nil {
@@ -158,8 +178,8 @@ func Poster(w http.ResponseWriter, r *http.Request) {
 	//store the data from the struct to the sql databases and log the error or latency time
 	QueryStart := time.Now()
 
-	_, errs = db.Exec("INSERT INTO clicks(id, advertiser_id, site_id, ip, ios_ifa) VALUES(?, ?, ?,?, ?)",
-		id, point.AdvertiserID, point.SiteID, ip, point.IosIfa)
+	_, errs = db.Exec("INSERT INTO clicks(id, advertiser_id, site_id, ip, ios_ifa, google_aid, windows_aid) VALUES(?, ?, ?, ?, ?, ?, ?)",
+		id, point.AdvertiserID, point.SiteID, ip, point.IosIfa, point.GoogleAid, point.WindowsAid)
 
 	if errs != nil {
 		errString := "sorry, there is an error"

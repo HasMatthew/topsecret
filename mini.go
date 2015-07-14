@@ -125,7 +125,7 @@ func Poster(w http.ResponseWriter, r *http.Request) {
 	var point Click
 	errs = json.Unmarshal(bytes, &point)
 	if errs != nil {
-		errString := fmt.Sprintf(" invalid Json format: %s", errs)
+		errString := fmt.Sprintf("invalid Json format: %s", errs)
 		response(w, errString, "", http.StatusBadRequest)
 		logWriter.Err(errString)
 		return
@@ -164,11 +164,13 @@ func Poster(w http.ResponseWriter, r *http.Request) {
 	responseTime("the time for this Post request is ", RequestStart)
 }
 
+//report the query / request latency
 func responseTime(message string, startTime time.Time) {
 	responseDuration := time.Since(startTime)
 	logWriter.Info(message + responseDuration.String())
 }
 
+//write the post reponse (faliure /success) to the client in  Json format
 func response(w http.ResponseWriter, errMessage string, id string, status int) {
 	w.WriteHeader(status)
 

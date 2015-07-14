@@ -72,7 +72,6 @@ type Click struct {
 	WindowsAid   string
 }
 
-<<<<<<< HEAD
 type PostResponses struct {
 	ErrMessage string
 	Id         string
@@ -159,7 +158,7 @@ func Poster(w http.ResponseWriter, r *http.Request) {
 	//store the data from the struct to the sql databases and log the error or latency time
 	QueryStart := time.Now()
 
-	_, errs = db.Exec("INSERT INTO clicks(id, advertiser_id, site_id, ip, ios_ifa, google_aid, windows_aid) VALUES(?, ?, ?, ?, ?)",
+	_, errs = db.Exec("INSERT INTO clicks(id, advertiser_id, site_id, ip, ios_ifa) VALUES(?, ?, ?,?, ?)",
 		id, point.AdvertiserID, point.SiteID, ip, point.IosIfa)
 
 	if errs != nil {

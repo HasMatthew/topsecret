@@ -28,7 +28,7 @@ var (
 func init() {
 	var err error
 	//set up the logwriter
-	logWriter, err = syslog.Dial("tcp", "localhost:10514", syslog.LOG_EMERG, "mini---porject")
+	logWriter, err = syslog.Dial("tcp", "localhost:10514", syslog.LOG_EMERG, "mini---project")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -47,7 +47,6 @@ func init() {
 
 // build/lauch the server and prepare to write logs
 func main() {
-
 	server := http.Server{
 		Addr:    ":5000",
 		Handler: myHandler(),
@@ -55,6 +54,7 @@ func main() {
 
 	server.ListenAndServe()
 
+	//close the database and log writer after the server stop running
 	logWriter.Close()
 	db.Close()
 }
@@ -212,7 +212,7 @@ func response(w http.ResponseWriter, errMessage string, id string, status int) {
 	if errs != nil {
 		fmt.Println(errs) // this errors is only for execution no need to output to user
 	} else {
-		io.WriteString(w, string(bytes))
+		w.Write(bytes)
 	}
 
 }

@@ -21,34 +21,32 @@ import (
 )
 
 var (
-	db     *sql.DB
-	logger *syslog.Writer
+	logWriter *syslog.Writer
+	db        *sql.DB
 )
 
 func init() {
-
-	// seed the random generator to generate IDs
-	rand.Seed(time.Now().UTC().UnixNano())
-
 	var err error
-	logger, err = syslog.Dial("tcp", "localhost:10514", syslog.LOG_ERR, "---MINI---")
+	//set up the logwriter
+	logWriter, err = syslog.Dial("tcp", "localhost:10514", syslog.LOG_EMERG, "mini---project")
 	if err != nil {
 		log.Fatal(err)
-	} else {
-		log.SetOutput(logger)
 	}
 
+	//set up the database
 	db, err = sql.Open("mysql", "root@tcp(localhost:3306)/logs")
 	if err != nil {
-		fmt.Println(err)
+		logWriter.Err("can't open databases")
 		return
 	}
+
+	// seed the random generator to generate IDs
+	mrand.Seed(time.Now().UTC().UnixNano())
 
 }
 
 // build/lauch the server and prepare to write logs
 func main() {
-
 	server := http.Server{
 		Addr:    ":5000",
 		Handler: myHandler(),
@@ -56,8 +54,9 @@ func main() {
 
 	server.ListenAndServe()
 
+	//close the database and log writer after the server stop running
+	logWriter.Close()
 	db.Close()
-	logger.Close()
 }
 
 //build and return the server's handler
@@ -80,6 +79,12 @@ type Click struct {
 	WindowsAid   string
 }
 
+type PostResponses struct {
+	ErrMessage string
+	Id         string
+	HttpStatus string
+}
+
 //function that handles the GET method
 //retrieve the json data form from database/server and output to the browser
 func GET(writer http.ResponseWriter, reader *http.Request) {
@@ -95,6 +100,7 @@ func GET(writer http.ResponseWriter, reader *http.Request) {
 
 	//store the data from sql database in a temp struct
 	var c Click
+
 	err := row.Scan(&c.ID, &c.AdvertiserID, &c.SiteID, &c.IP, &c.IosIfa, &c.GoogleAid, &c.WindowsAid)
 
 	//check for errors in scan  (404 and 500)
@@ -137,19 +143,32 @@ func GET(writer http.ResponseWriter, reader *http.Request) {
 //the function which handle the post method
 //post the json data from broswer to the server and sql databases
 func Poster(w http.ResponseWriter, r *http.Request) {
+	//time when do request
+	RequestStart := time.Now()
 
 	//get the raw bytes of input data
 	bytes, errs := ioutil.ReadAll(r.Body)
 	if errs != nil {
-		fmt.Println(errs)
+		errString := fmt.Sprintf("buffer overflow %s", errs)
+		response(w, errString, "", http.StatusBadRequest)
 		return
 	}
 
-	//store the raw bytes to a temporary struct
+	//store the raw bytes to a temporary struct and log the Json invalid format
 	var point Click
 	errs = json.Unmarshal(bytes, &point)
 	if errs != nil {
-		fmt.Println(errs)
+		errString := fmt.Sprintf("invalid Json format: %s", errs)
+		response(w, errString, "", http.StatusBadRequest)
+		logWriter.Err(errString)
+		return
+	}
+
+	//validate the input and log error input message
+	if point.AdvertiserID == 0 || point.SiteID == 0 {
+		errString := "your advertiserID or site ID may equals to 0"
+		response(w, errString, "", http.StatusBadRequest)
+		logWriter.Err(errString)
 		return
 	}
 
@@ -157,15 +176,43 @@ func Poster(w http.ResponseWriter, r *http.Request) {
 	id := Id(point.AdvertiserID)
 	ip := r.RemoteAddr
 
-	//store the data from the struct to the sql databases
-	_, errs = db.Exec("INSERT INTO clicks(id, advertiser_id, site_id, ip, ios_ifa, google_aid, windows_aid ) VALUES(?, ?, ?, ?, ?, ?, ?)",
+	//store the data from the struct to the sql databases and log the error or latency time
+	QueryStart := time.Now()
+
+	_, errs = db.Exec("INSERT INTO clicks(id, advertiser_id, site_id, ip, ios_ifa, google_aid, windows_aid) VALUES(?, ?, ?, ?, ?, ?, ?)",
 		id, point.AdvertiserID, point.SiteID, ip, point.IosIfa, point.GoogleAid, point.WindowsAid)
 
 	if errs != nil {
-		fmt.Println(errs)
+		errString := "sorry, there is an error"
+		response(w, errString, "", http.StatusInternalServerError)
+		errString = fmt.Sprintf("database connection error : %s", errs)
+		logWriter.Err(errString)
 		return
+	}
+
+	responseTime("the time for inserting data to clicks table is ", QueryStart)
+
+	//sucess and log the request latency
+	response(w, "", id, http.StatusOK)
+	responseTime("the time for this Post request is ", RequestStart)
+}
+
+//report the query / request latency
+func responseTime(message string, startTime time.Time) {
+	responseDuration := time.Since(startTime)
+	logWriter.Info(message + responseDuration.String())
+}
+
+//write the post reponse (faliure /success) to the client in  Json format
+func response(w http.ResponseWriter, errMessage string, id string, status int) {
+	w.WriteHeader(status)
+
+	validate := PostResponses{errMessage, id, strconv.Itoa(status)}
+	bytes, errs := json.Marshal(&validate)
+	if errs != nil {
+		fmt.Println(errs) // this errors is only for execution no need to output to user
 	} else {
-		io.WriteString(w, id)
+		w.Write(bytes)
 	}
 
 }

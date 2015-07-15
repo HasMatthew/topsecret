@@ -101,17 +101,17 @@ func GET(writer http.ResponseWriter, reader *http.Request) {
 	if err == sql.ErrNoRows {
 		fmt.Println(err)
 		writer.WriteHeader(http.StatusNotFound)
-		io.WriteString(writer, "{\"message\" : \"Error 404\"}")
-		io.WriteString(writer, "{\"httpstatus\" : \"404\"}")
-		log.Print("{\"message\" : \"Error 404\"}, ")
-		log.Println("{\"httpstatus\" : \"404\"}")
+		io.WriteString(writer, `{"message" : "Error 404"}`)
+		io.WriteString(writer, `{"httpstatus" : "404"}`)
+		log.Print(`{"message" : "Error 404"}, `)
+		log.Println(`{"httpstatus" : "404"}`)
 		return
 	} else if err != nil {
 		writer.WriteHeader(http.StatusInternalServerError)
 		fmt.Println(err)
 		io.WriteString(writer, "Error 500")
-		log.Print("{\"message\" : \"Error 500\"}, ")
-		log.Println("{\"httpstatus\" : \"500\"}")
+		log.Print(`{"message" : "Error 500"}, "`)
+		log.Println(`{"httpstatus" : "500"}`)
 		return
 	}
 

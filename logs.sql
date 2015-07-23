@@ -9,5 +9,5 @@ create table clicks
     ios_ifa varchar(255) default NULL,
     google_aid varchar(255) default NULL,
     windows_aid varchar(255) default NULL,
-    created timestamp default current_timestamp
+    time_stamp timestamp default current_timestamp
 );

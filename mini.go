@@ -11,7 +11,7 @@ import (
 	"io/ioutil"
 	"log"
 	"log/syslog"
-	mrand "math/rand"
+	"math/rand"
 	"net/http"
 	"strconv"
 	"time"
@@ -107,18 +107,18 @@ func GET(writer http.ResponseWriter, reader *http.Request) {
 	//check for errors in scan  (404 and 500)
 	if err == sql.ErrNoRows {
 		fmt.Println(err)
-		io.WriteString(writer, "{\"message\" : \"Error 404\"}")
-		io.WriteString(writer, "{\"httpstatus\" : \"404\"}")
 		writer.WriteHeader(http.StatusNotFound)
-		log.Print("{\"message\" : \"Error 404\"}, ")
-		log.Println("{\"httpstatus\" : \"404\"}")
+		io.WriteString(writer, `{"message" : "Error 404"}`)
+		io.WriteString(writer, `{"httpstatus" : "404"}`)
+		log.Print(`{"message" : "Error 404"}, `)
+		log.Println(`{"httpstatus" : "404"}`)
 		return
 	} else if err != nil {
+		writer.WriteHeader(http.StatusInternalServerError)
 		fmt.Println(err)
 		io.WriteString(writer, "Error 500")
-		writer.WriteHeader(http.StatusInternalServerError)
-		log.Print("{\"message\" : \"Error 500\"}, ")
-		log.Println("{\"httpstatus\" : \"500\"}")
+		log.Print(`{"message" : "Error 500"}, "`)
+		log.Println(`{"httpstatus" : "500"}`)
 		return
 	}
 
@@ -130,8 +130,8 @@ func GET(writer http.ResponseWriter, reader *http.Request) {
 	}
 
 	//output the raw bytes to the browser
-	io.WriteString(writer, string(bytes))
 	writer.WriteHeader(http.StatusOK)
+	io.WriteString(writer, string(bytes))
 
 	// log the event
 	log.Println("GET:", c.ID)
@@ -234,7 +234,7 @@ func Hex(chunks int) string {
 
 	bytes := make([]byte, 4)
 	for i := 0; i < chunks; i++ {
-		binary.LittleEndian.PutUint32(bytes, mrand.Uint32())
+		binary.LittleEndian.PutUint32(bytes, rand.Uint32())
 		buffer.WriteString(hex.EncodeToString(bytes))
 	}
 

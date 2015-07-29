@@ -34,7 +34,7 @@ func init() {
 	}
 
 	//set up the database
-	db, err = sql.Open("mysql", "root@tcp(localhost:3306)/logs")
+	db, err = sql.Open("mysql", "root@tcp(localhost:3306)/logs?parseTime=true")
 	if err != nil {
 		logWriter.Err("can't open databases")
 		return
@@ -77,6 +77,7 @@ type Click struct {
 	IosIfa       string
 	GoogleAid    string
 	WindowsAid   string
+	Date_time    time.Time // store the time.Time struct in it and use to make the timestamp for elasticsearch later
 }
 
 type PostResponses struct {
@@ -96,12 +97,12 @@ func GET(writer http.ResponseWriter, reader *http.Request) {
 	id := mux.Vars(reader)["id"]
 
 	//select data from sql databases according to the id
-	row := db.QueryRow("SELECT id, advertiser_id, site_id, ip, ios_ifa, google_aid, windows_aid  FROM clicks WHERE id=?", id)
+	row := db.QueryRow("SELECT id, advertiser_id, site_id, ip, ios_ifa, google_aid, windows_aid, date_time FROM clicks WHERE id=?", id)
 
 	//store the data from sql database in a temp struct
 	var c Click
 
-	err := row.Scan(&c.ID, &c.AdvertiserID, &c.SiteID, &c.IP, &c.IosIfa, &c.GoogleAid, &c.WindowsAid)
+	err := row.Scan(&c.ID, &c.AdvertiserID, &c.SiteID, &c.IP, &c.IosIfa, &c.GoogleAid, &c.WindowsAid, &c.Date_time)
 
 	//check for errors in scan  (404 and 500)
 	if err == sql.ErrNoRows {
@@ -179,10 +180,11 @@ func Poster(w http.ResponseWriter, r *http.Request) {
 	//store the data from the struct to the sql databases and log the error or latency time
 	QueryStart := time.Now()
 
-	_, errs = db.Exec("INSERT INTO clicks(id, advertiser_id, site_id, ip, ios_ifa, google_aid, windows_aid) VALUES(?, ?, ?, ?, ?, ?, ?)",
-		id, point.AdvertiserID, point.SiteID, ip, point.IosIfa, point.GoogleAid, point.WindowsAid)
+	_, errs = db.Exec("INSERT INTO clicks(id, advertiser_id, site_id, ip, ios_ifa, google_aid, windows_aid, date_time) VALUES(?, ?, ?, ?, ?, ?, ?,?)",
+		id, point.AdvertiserID, point.SiteID, ip, point.IosIfa, point.GoogleAid, point.WindowsAid, RequestStart)
 
 	if errs != nil {
+		fmt.Println(errs) //show to the sever protecter inside of users
 		errString := "sorry, there is an error"
 		response(w, errString, "", http.StatusInternalServerError)
 		errString = fmt.Sprintf("database connection error : %s", errs)
@@ -203,7 +205,7 @@ func responseTime(message string, startTime time.Time) {
 	logWriter.Info(message + responseDuration.String())
 }
 
-//write the post reponse (faliure /success) to the client in  Json format
+//write the post reponse (faliure /success) to the client in Json format
 func response(w http.ResponseWriter, errMessage string, id string, status int) {
 	w.WriteHeader(status)
 

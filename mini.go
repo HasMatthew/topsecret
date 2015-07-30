@@ -11,7 +11,7 @@ import (
 	"io/ioutil"
 	"log"
 	"log/syslog"
-	"math/rand"
+	mrand "math/rand"
 	"net/http"
 	"strconv"
 	"time"
@@ -234,7 +234,7 @@ func Hex(chunks int) string {
 
 	bytes := make([]byte, 4)
 	for i := 0; i < chunks; i++ {
-		binary.LittleEndian.PutUint32(bytes, rand.Uint32())
+		binary.LittleEndian.PutUint32(bytes, mrand.Uint32())
 		buffer.WriteString(hex.EncodeToString(bytes))
 	}
 

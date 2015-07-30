@@ -166,12 +166,12 @@ func Poster(w http.ResponseWriter, r *http.Request) {
 	}
 
 	//validate the input and log error input message
-	/*if point.AdvertiserID == 0 || point.SiteID == 0 {
+	if point.AdvertiserID == 0 || point.SiteID == 0 {
 		errString := "your advertiserID or site ID may equals to 0"
 		response(w, errString, "", http.StatusBadRequest)
 		logWriter.Err(errString)
 		return
-	}*/
+	}
 
 	//generate a ramdom id for the post data and also get the ip address
 	id := Id(point.AdvertiserID)

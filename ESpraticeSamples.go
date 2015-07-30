@@ -99,7 +99,7 @@ func main() {
   var thing Event // this is the event that holds the information for each of the events in the database
   var test int    // this is used to test if the event is posted to the database via a random numver in the nested for loop below
 
-  for true {
+  for i:=0; i< 1000;i++{
 
     // generate the event that may be added to the database
     thing = makeEvent()

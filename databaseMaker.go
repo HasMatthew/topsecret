@@ -109,6 +109,9 @@ func main() {
 			test = rand.Intn(3)
 			if test == 0 {
 
+				// generate a unique ID for this instance of the event
+				thing.ID = generateID(thing.AdvertiserID)
+
 				switch j {
 				case 0:
 					thing.Type = "impression"

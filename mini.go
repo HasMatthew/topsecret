@@ -7,15 +7,15 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
-	"io"
 	"io/ioutil"
 	"log"
 	"log/syslog"
-	mrand "math/rand"
+	"math/rand"
 	"net/http"
 	"strconv"
 	"time"
 
+	wrapper "github.com/MobileAppTracking/measurement/logrusWrapper"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/gorilla/mux"
 )
@@ -26,6 +26,12 @@ var (
 )
 
 func init() {
+
+	wrapper.AddHookToSyslog("tcp", "localhost:10514", syslog.LOG_EMERG, "Exact Details: ")
+
+	log.SetFormatter(&log.JSONFormatter{})
+	log.SetLevel(log.DebugLevel)
+
 	var err error
 	//set up the logwriter
 	logWriter, err = syslog.Dial("tcp", "localhost:10514", syslog.LOG_EMERG, "mini---project")
@@ -41,7 +47,7 @@ func init() {
 	}
 
 	// seed the random generator to generate IDs
-	mrand.Seed(time.Now().UTC().UnixNano())
+	rand.Seed(time.Now().UTC().UnixNano())
 
 }
 
@@ -71,6 +77,7 @@ func myHandler() *mux.Router {
 
 type Click struct {
 	ID           string
+	Type         string
 	AdvertiserID int
 	SiteID       int
 	IP           string
@@ -106,19 +113,31 @@ func GET(writer http.ResponseWriter, reader *http.Request) {
 
 	//check for errors in scan  (404 and 500)
 	if err == sql.ErrNoRows {
-		fmt.Println(err)
+
+		// fmt.Println(err)
+
 		writer.WriteHeader(http.StatusNotFound)
-		io.WriteString(writer, `{"message" : "Error 404"}`)
-		io.WriteString(writer, `{"httpstatus" : "404"}`)
-		log.Print(`{"message" : "Error 404"}, `)
-		log.Println(`{"httpstatus" : "404"}`)
+
+		// io.WriteString(writer, `{"message" : "Error 404"}`)
+		// io.WriteString(writer, `{"httpstatus" : "404"}`)
+		// log.Print(`{"message" : "Error 404"}, `)
+		// log.Println(`{"httpstatus" : "404"}`)
+
+		wrapper.Error(c.ID, c.Type, "Error 404: no rows found", c.SiteID)
+
 		return
 	} else if err != nil {
+
+		// fmt.Println(err)
+
 		writer.WriteHeader(http.StatusInternalServerError)
-		fmt.Println(err)
-		io.WriteString(writer, "Error 500")
-		log.Print(`{"message" : "Error 500"}, "`)
-		log.Println(`{"httpstatus" : "500"}`)
+
+		// io.WriteString(writer, "Error 500")
+		// log.Print(`{"message" : "Error 500"}, "`)
+		// log.Println(`{"httpstatus" : "500"}`)
+
+		wrapper.Error(c.ID, c.Type, "Error 500: Internal server error", c.SiteID)
+
 		return
 	}
 
@@ -129,15 +148,15 @@ func GET(writer http.ResponseWriter, reader *http.Request) {
 		return
 	}
 
-	//output the raw bytes to the browser
-	writer.WriteHeader(http.StatusOK)
-	io.WriteString(writer, string(bytes))
+	// //output the raw bytes to the browser
+	// writer.WriteHeader(http.StatusOK)
+	// io.WriteString(writer, string(bytes))
 
 	// log the event
-	log.Println("GET:", c.ID)
+	wrapper.info(c.ID, c.Type, "GET successful", c.SiteID, time.Now().Sub(starttime))
 
 	//log the time
-	log.Println("GET: took", time.Now().Sub(starttime), "to execute")
+	// log.Println("GET: took", time.Now().Sub(starttime), "to execute")
 
 }
 
@@ -192,17 +211,11 @@ func Poster(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	responseTime("the time for inserting data to clicks table is ", QueryStart)
+	//logWriter.Info(point.ID, point.Type, "the time for inserting data to clicks table is ", time.Since(QueryStart))
 
 	//sucess and log the request latency
 	response(w, "", id, http.StatusOK)
-	responseTime("the time for this Post request is ", RequestStart)
-}
-
-//report the query / request latency
-func responseTime(message string, startTime time.Time) {
-	responseDuration := time.Since(startTime)
-	logWriter.Info(message + responseDuration.String())
+	logWriter.Info(point.ID, point.Type, "Post successful!", point.SiteID, time.Since(RequestStart), time.Since(QueryStart))
 }
 
 //write the post reponse (faliure /success) to the client in Json format
@@ -234,7 +247,7 @@ func Hex(chunks int) string {
 
 	bytes := make([]byte, 4)
 	for i := 0; i < chunks; i++ {
-		binary.LittleEndian.PutUint32(bytes, mrand.Uint32())
+		binary.LittleEndian.PutUint32(bytes, rand.Uint32())
 		buffer.WriteString(hex.EncodeToString(bytes))
 	}
 

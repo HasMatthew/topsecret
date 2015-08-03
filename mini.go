@@ -118,23 +118,12 @@ func GET(writer http.ResponseWriter, reader *http.Request) {
 
 		writer.WriteHeader(http.StatusNotFound)
 
-		// io.WriteString(writer, `{"message" : "Error 404"}`)
-		// io.WriteString(writer, `{"httpstatus" : "404"}`)
-		// log.Print(`{"message" : "Error 404"}, `)
-		// log.Println(`{"httpstatus" : "404"}`)
-
 		wrapper.Error(c.ID, c.Type, "Error 404: no rows found", c.SiteID)
 
 		return
 	} else if err != nil {
 
-		// fmt.Println(err)
-
 		writer.WriteHeader(http.StatusInternalServerError)
-
-		// io.WriteString(writer, "Error 500")
-		// log.Print(`{"message" : "Error 500"}, "`)
-		// log.Println(`{"httpstatus" : "500"}`)
 
 		wrapper.Error(c.ID, c.Type, "Error 500: Internal server error", c.SiteID)
 
@@ -148,15 +137,8 @@ func GET(writer http.ResponseWriter, reader *http.Request) {
 		return
 	}
 
-	// //output the raw bytes to the browser
-	// writer.WriteHeader(http.StatusOK)
-	// io.WriteString(writer, string(bytes))
-
 	// log the event
 	wrapper.info(c.ID, c.Type, "GET successful", c.SiteID, time.Now().Sub(starttime))
-
-	//log the time
-	// log.Println("GET: took", time.Now().Sub(starttime), "to execute")
 
 }
 
@@ -210,8 +192,6 @@ func Poster(w http.ResponseWriter, r *http.Request) {
 		logWriter.Err(errString)
 		return
 	}
-
-	//logWriter.Info(point.ID, point.Type, "the time for inserting data to clicks table is ", time.Since(QueryStart))
 
 	//sucess and log the request latency
 	response(w, "", id, http.StatusOK)

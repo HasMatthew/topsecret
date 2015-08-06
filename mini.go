@@ -25,7 +25,8 @@ var (
 
 func init() {
 
-	structured.AddHookToSyslog("tcp", "http://dp-joshp01-dev.sea1.office.priv:9200/database2/testdata", syslog.LOG_EMERG, "log Details: ")
+	structured.AddHookToSyslog("tcp", "localhost:10514", syslog.LOG_EMERG, "mini---project")
+	structured.AddHookToElasticsearch("localhost", "9200", "clients", "user", "")
 
 	var err error
 

@@ -121,7 +121,7 @@ func GET(writer http.ResponseWriter, reader *http.Request) {
 
 	// log the event
 	structured.Info(c.ID, c.Type, "GET successful", c.SiteID,
-		structured.ExtraFields{"latency from request:": time.Since(starttime)})
+		structured.ExtraFields{structured.RequestLatency: time.Since(starttime)})
 
 }
 
@@ -179,8 +179,8 @@ func POST(w http.ResponseWriter, r *http.Request) {
 	//sucess and log the request latency
 	response(w, "", id, http.StatusOK)
 	structured.Info(point.ID, point.Type, "Post successful!", point.SiteID,
-		structured.ExtraFields{"latency from request:": time.Since(RequestStart),
-			"latency from querry:": time.Since(QueryStart)})
+		structured.ExtraFields{structured.RequestLatency: time.Since(RequestStart),
+			structured.QueryLatency: time.Since(QueryStart)})
 }
 
 //write the post reponse (faliure /success) to the client in Json format

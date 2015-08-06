@@ -27,10 +27,12 @@ func init() {
 
 	structured.AddHookToSyslog("tcp", "http://dp-joshp01-dev.sea1.office.priv:9200/database2/testdata", syslog.LOG_EMERG, "log Details: ")
 
+	var err error
+
 	//set up the database
-	db, err := sql.Open("mysql", "root@tcp(localhost:3306)/logs?parseTime=true")
+	db, err = sql.Open("mysql", "root@tcp(localhost:3306)/logs?parseTime=true")
 	if err != nil {
-		structured.Err("can't open databases")
+		structured.Error("", "", "can't open databases", 0, nil)
 		return
 	}
 
@@ -143,7 +145,7 @@ func POST(w http.ResponseWriter, r *http.Request) {
 	if errs != nil {
 		errString := fmt.Sprintf("invalid Json format: %s", errs)
 		response(w, errString, "", http.StatusBadRequest)
-		structured.Err(errString)
+		structured.Error("", "", errString, 0, nil)
 		return
 	}
 
@@ -151,7 +153,7 @@ func POST(w http.ResponseWriter, r *http.Request) {
 	if point.AdvertiserID == 0 || point.SiteID == 0 {
 		errString := "your advertiserID or site ID may equals to 0"
 		response(w, errString, "", http.StatusBadRequest)
-		structured.Err(errString)
+		structured.Error("", "", errString, 0, nil)
 		return
 	}
 
@@ -170,7 +172,7 @@ func POST(w http.ResponseWriter, r *http.Request) {
 		errString := "sorry, there is an error"
 		response(w, errString, "", http.StatusInternalServerError)
 		errString = fmt.Sprintf("database connection error : %s", errs)
-		structured.Err(errString)
+		structured.Error("", "", errString, 0, nil)
 		return
 	}
 

@@ -12,19 +12,18 @@ import (
 	"time"
 )
 
-// select how may pieces of random data to create
-var sizeOfDatabase int = 100000
-
 type Event struct {
-	Type         string
-	ID           string
-	AdvertiserID int
-	PublisherID  int
-	SiteID       int
-	IP           string
-	IosIfa       string
-	GoogleAid    string
-	WindowsAid   string
+	Type           string
+	ID             string
+	AdvertiserID   int
+	PublisherID    int
+	SiteID         int
+	IP             string
+	IosIfa         string
+	GoogleAid      string
+	WindowsAid     string
+	QueryStartTime time.Time
+	Latency        int64
 }
 
 // hold all the characters that are used in random strings
@@ -87,6 +86,29 @@ func Hex(size int) string {
 	return buffer.String()
 }
 
+func generateLatency() int64 {
+
+	var timeAdded int64
+	var totalLatency int64
+
+	for true {
+
+		timeAdded = (rand.Int63n(10000000))
+		totalLatency += timeAdded
+
+		if timeAdded > 8200000 {
+			break
+		}
+		if timeAdded < 8090000 && timeAdded > 8000000 {
+			totalLatency += 300000000
+		}
+
+	}
+
+	return (totalLatency)
+
+}
+
 func main() {
 
 	// define the url to post to in elasticSearch
@@ -96,8 +118,9 @@ func main() {
 	rand.Seed(time.Now().UTC().UnixNano())
 
 	// the variables that will be used
-	var thing Event // this is the event that holds the information for each of the events in the database
-	var test int    // this is used to test if the event is posted to the database via a random numver in the nested for loop below
+	var thing Event           // this is the event that holds the information for each of the events in the database
+	var test int              // this is used to test if the event is posted to the database via a random numver in the nested for loop below
+	currentTime := time.Now() // start generating time from now and work backwords
 
 	for true {
 
@@ -106,11 +129,15 @@ func main() {
 
 		for j := 0; j < 4; j++ {
 
+			currentTime = currentTime.Add(time.Duration(-1 * rand.Int63n(15000000000)))
+
 			test = rand.Intn(3)
 			if test == 0 {
 
 				// generate a unique ID for this instance of the event
 				thing.ID = generateID(thing.AdvertiserID)
+				thing.QueryStartTime = currentTime
+				thing.Latency = generateLatency()
 
 				switch j {
 				case 0:
@@ -129,7 +156,7 @@ func main() {
 					return
 				}
 
-				//	fmt.Println(string(eventJSONstring))
+				// fmt.Println(string(eventJSONstring))
 
 				req, err := http.NewRequest("POST", url, bytes.NewBuffer(eventJSONstring))
 				if err != nil {

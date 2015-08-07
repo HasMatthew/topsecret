@@ -16,6 +16,8 @@ import (
 	"strconv"
 	"time"
 
+	wrapper "github.com/MobileAppTracking/measurement/lib/structured"
+
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/gorilla/mux"
 )
@@ -32,6 +34,9 @@ func init() {
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	wrapper.AddHookToSyslog("tcp", "localhost:10514", syslog.LOG_EMERG, "mini---project")
+	wrapper.AddHookToElasticsearch("localhost", "9200", "clients", "user", "")
 
 	//set up the database
 	db, err = sql.Open("mysql", "root@tcp(localhost:3306)/logs?parseTime=true")
@@ -193,6 +198,7 @@ func Poster(w http.ResponseWriter, r *http.Request) {
 	}
 
 	responseTime("the time for inserting data to clicks table is ", QueryStart)
+	wrapper.Info(id, "click", "msg", point.SiteID, nil)
 
 	//sucess and log the request latency
 	response(w, "", id, http.StatusOK)

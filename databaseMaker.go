@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"math/rand"
+	"net/http"
 	"strconv"
 	"time"
 )
@@ -89,7 +90,7 @@ func Hex(size int) string {
 func main() {
 
 	// define the url to post to in elasticSearch
-	//url := "http://dp-joshp01-dev.sea1.office.priv:9200/indexs/types"
+	url := "http://dp-kewei01-dev.sea1.office.priv:9200/clients/ids"
 
 	// seed the random number generator to prevent repeated values each time the program runs
 	rand.Seed(time.Now().UTC().UnixNano())
@@ -98,7 +99,7 @@ func main() {
 	var thing Event // this is the event that holds the information for each of the events in the database
 	var test int    // this is used to test if the event is posted to the database via a random numver in the nested for loop below
 
-	for i := 0; i < 10; i++ {
+	for i := 0; i <= 30; i++ {
 
 		// generate the event that may be added to the database
 		thing = makeEvent()
@@ -130,7 +131,7 @@ func main() {
 
 				fmt.Println(string(eventJSONstring))
 
-				/*req, err := http.NewRequest("POST", url, bytes.NewBuffer(eventJSONstring))
+				req, err := http.NewRequest("POST", url, bytes.NewBuffer(eventJSONstring))
 				if err != nil {
 					fmt.Println(err)
 				}
@@ -145,7 +146,7 @@ func main() {
 
 				//	fmt.Println(string(temp))
 
-				resp.Body.Close()*/
+				resp.Body.Close()
 
 			} // close if statement
 		} // close inner for loop (j)

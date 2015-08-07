@@ -45,10 +45,10 @@ func makeEvent() Event {
 
 	typeOfDevice := rand.Intn(3)
 
-	thing.PublisherID = rand.Intn(90000) + 10000
-	thing.AdvertiserID = rand.Intn(90000) + 10000
+	thing.PublisherID = generateNumericalID()
+	thing.AdvertiserID = generateNumericalID()
 	thing.ID = generateID(thing.AdvertiserID)
-	thing.SiteID = rand.Intn(90000) + 10000
+	thing.SiteID = generateNumericalID()
 	thing.IP = strconv.Itoa(rand.Intn(256)) + "." + strconv.Itoa(rand.Intn(256)) + "." + strconv.Itoa(rand.Intn(256)) + "." + strconv.Itoa(rand.Intn(256))
 	thing.Type = ""
 
@@ -84,6 +84,24 @@ func Hex(size int) string {
 	}
 
 	return buffer.String()
+}
+
+func generateNumericalID() int {
+
+	var test int
+	var idnum int
+
+	idnum = 1000
+
+	for true {
+		test = rand.Intn(20)
+		idnum += test
+
+		if test == 1 {
+			break
+		}
+	}
+	return idnum
 }
 
 func generateLatency() int64 {

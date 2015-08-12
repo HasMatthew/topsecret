@@ -2,7 +2,9 @@ package main
 
 import (
 	"bufio"
+	"bytes"
 	"fmt"
+	"net/http"
 	"os"
 	"strings"
 	"time"
@@ -24,7 +26,7 @@ func readLines(path string) {
 
 	var jsonString []string
 
-	//	url := "http://dp-joshp01-dev.sea1.office.priv:9200/database2/mydata"
+	url := "http://dp-joshp01-dev.sea1.office.priv:9200/database2/mydata"
 	dataFields := `"id","tracking_id","stat_click_id","session_ip","session_datetime","publisher_id","ad_network_id","advertiser_id","site_id","campaign_id","site_event_id","publisher_ref_id","device_ip","sdk","device_carrier","language","package_name","app_name","country_id","region_id","user_agent","request_url","created","modified","latitude","longitude","match_type","install_date"`
 	dataFieldsSlice := strings.Split(dataFields, ",")
 	lengthOfDataFieldSlice := len(dataFieldsSlice)
@@ -35,6 +37,7 @@ func readLines(path string) {
 	scanner.Split(bufio.ScanLines)
 
 	count := 0
+	count1 := 0
 
 	for scanner.Scan() {
 
@@ -53,22 +56,25 @@ func readLines(path string) {
 
 		line := scanner.Text()
 
-		//fmt.Println(line)
-
 		fields := strings.Split(line, ",")
 		lengthOfFields := len(fields)
 
-		if lengthOfFields != lengthOfDataFieldSlice {
-			// for i := 0; i < lengthOfDataFieldSlice; i++ {
-			// 	if strings.HasPrefix(fields[i], `"`) && !(strings.HasSuffix(fields[i], `"`)) {
-			// 		fields[i] = fields[i] + "," + fields[i+1]
-			// 		for j := i + 1; j < lengthOfDataFieldSlice; j++ {
-			// 			fields[j] = fields[j+1]
-			// 		}
-			// 		lengthOfFields--
-			// 	}
-			// }
+		if lengthOfFields < lengthOfDataFieldSlice {
+			count++
+			count1++
 			continue
+		}
+
+		if lengthOfFields > lengthOfDataFieldSlice {
+			for i := 0; i < lengthOfDataFieldSlice; i++ {
+				if strings.HasPrefix(fields[i], `"`) && !(strings.HasSuffix(fields[i], `"`)) {
+					fields[i] = fields[i] + "," + fields[i+1]
+					for j := i + 1; j < lengthOfDataFieldSlice; j++ {
+						fields[j] = fields[j+1]
+					}
+					lengthOfFields--
+				}
+			}
 		}
 
 		for i := 0; i < lengthOfDataFieldSlice; i++ {
@@ -88,37 +94,37 @@ func readLines(path string) {
 		fields[23] = IOS8601(fields[23])
 		fields[27] = IOS8601(fields[27])
 
-		// for i := 0; i < lengthOfDataFieldSlice-1; i++ {
-		// 	jsonString = append(jsonString, dataFieldsSlice[i])
-		// 	jsonString = append(jsonString, ":")
-		// 	jsonString = append(jsonString, fields[i])
-		// 	jsonString = append(jsonString, ",")
-		// }
+		for i := 0; i < lengthOfDataFieldSlice-1; i++ {
+			jsonString = append(jsonString, dataFieldsSlice[i])
+			jsonString = append(jsonString, ":")
+			jsonString = append(jsonString, fields[i])
+			jsonString = append(jsonString, ",")
+		}
 
-		// jsonString = append(jsonString, dataFieldsSlice[lengthOfDataFieldSlice-1])
-		// jsonString = append(jsonString, ":")
-		// jsonString = append(jsonString, fields[lengthOfDataFieldSlice-1])
-		// jsonString = append(jsonString, "}")
+		jsonString = append(jsonString, dataFieldsSlice[lengthOfDataFieldSlice-1])
+		jsonString = append(jsonString, ":")
+		jsonString = append(jsonString, fields[lengthOfDataFieldSlice-1])
+		jsonString = append(jsonString, "}")
 
-		// finalJsonString := strings.Join(jsonString, "")
+		finalJsonString := strings.Join(jsonString, "")
 
-		//	fmt.Println(finalJsonString)
-		//	fmt.Println("\n")
+		// fmt.Println(finalJsonString)
+		// fmt.Println("\n")
 
-		// req, err := http.NewRequest("POST", url, bytes.NewBuffer([]byte(finalJsonString)))
-		// if err != nil {
-		// 	fmt.Println(err)
-		// }
+		req, err := http.NewRequest("POST", url, bytes.NewBuffer([]byte(finalJsonString)))
+		if err != nil {
+			fmt.Println(err)
+		}
 
-		// client := &http.Client{}
-		// resp, err := client.Do(req)
-		// if err != nil {
-		// 	fmt.Println(err)
-		// }
+		client := &http.Client{}
+		resp, err := client.Do(req)
+		if err != nil {
+			fmt.Println(err)
+		}
 
-		// resp.Body.Close()
+		resp.Body.Close()
 
-		fmt.Println(count)
+		fmt.Println(count, ",", count1)
 		// fmt.Println(finalJsonString)
 
 		count++

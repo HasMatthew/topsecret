@@ -65,6 +65,37 @@ func myHandler() *mux.Router {
 
 //build the struct which holds the temp data
 
+type Install struct {
+	id               string
+	tracking_id      string
+	stat_click_id    string
+	session_ip       string
+	session_datetime string
+	publisher_id     string
+	ad_network_id    string
+	advertiser_id    string
+	site_id          string
+	campaign_id      string
+	site_event_id    string
+	publisher_ref_id string
+	device_ip        string
+	sdk              string
+	device_carrier   string
+	language         string
+	package_name     string
+	app_name         string
+	country_id       string
+	region_id        string
+	user_agent       string
+	request_url      string
+	created          string
+	modified         string
+	latitude         string
+	longitude        string
+	match_type       string
+	install_date     string
+}
+
 type Click struct {
 	ID           string
 	Type         string

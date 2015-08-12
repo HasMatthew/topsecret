@@ -140,7 +140,7 @@ func main() {
 	var test int              // this is used to test if the event is posted to the database via a random numver in the nested for loop below
 	currentTime := time.Now() // start generating time from now and work backwords
 
-	for true {
+	for samplesize := 0; samplesize < 3; samplesize++ {
 
 		// generate the event that may be added to the database
 		thing = makeEvent()
@@ -174,7 +174,7 @@ func main() {
 					return
 				}
 
-				// fmt.Println(string(eventJSONstring))
+				fmt.Println(string(eventJSONstring))
 
 				req, err := http.NewRequest("POST", url, bytes.NewBuffer(eventJSONstring))
 				if err != nil {

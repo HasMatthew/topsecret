@@ -8,66 +8,6 @@ import (
 	"time"
 )
 
-// type Install struct {
-// 	id               string
-// 	tracking_id      string
-// 	stat_click_id    string
-// 	session_ip       string
-// 	session_datetime time.Time
-// 	publisher_id     int64
-// 	ad_network_id    int64
-// 	advertiser_id    int64
-// 	site_id          int64
-// 	campaign_id      int64
-// 	site_event_id    int64
-// 	publisher_ref_id string
-// 	device_ip        string
-// 	sdk              string
-// 	device_carrier   string
-// 	language         string
-// 	package_name     string
-// 	app_name         string
-// 	country_id       int64
-// 	region_id        int64
-// 	user_agent       string
-// 	request_url      string
-// 	created          time.Time
-// 	modified         time.Time
-// 	latitude         float64
-// 	longitude        float64
-// 	match_type       string
-// 	install_date     time.Time
-// }
-
-// temp.id = fields[0]
-// temp.tracking_id = fields[1]
-// temp.stat_click_id = fields[2]
-// temp.session_ip = fields[3]
-// temp.session_datetime, _ = time.Parse("2006-01-02 15:04:05", fields[4])
-// temp.publisher_id, _ = strconv.ParseInt(fields[5], 10, 64)
-// temp.ad_network_id, _ = strconv.ParseInt(fields[6], 10, 64)
-// temp.advertiser_id, _ = strconv.ParseInt(fields[7], 10, 64)
-// temp.site_id, _ = strconv.ParseInt(fields[8], 10, 64)
-// temp.campaign_id, _ = strconv.ParseInt(fields[9], 10, 64)
-// temp.site_event_id, _ = strconv.ParseInt(fields[10], 10, 64)
-// temp.publisher_ref_id = fields[11]
-// temp.device_ip = fields[12]
-// temp.sdk = fields[13]
-// temp.device_carrier = fields[14]
-// temp.language = fields[15]
-// temp.package_name = fields[16]
-// temp.app_name = fields[17]
-// temp.country_id, _ = strconv.ParseInt(fields[18], 10, 64)
-// temp.region_id, _ = strconv.ParseInt(fields[19], 10, 64)
-// temp.user_agent = fields[20]
-// temp.request_url = fields[21]
-// temp.created, _ = time.Parse("2006-01-02 15:04:05", fields[22])
-// temp.modified, _ = time.Parse("2006-01-02 15:04:05", fields[23])
-// temp.latitude, _ = strconv.ParseFloat(fields[24], 64)
-// temp.longitude, _ = strconv.ParseFloat(fields[25], 64)
-// temp.match_type = fields[26]
-// temp.install_date, _ = time.Parse("2006-01-02 15:04:05", fields[27])
-
 func main() {
 	readLines("/tmp/stat_installs_1681.csv")
 }
@@ -118,16 +58,17 @@ func readLines(path string) {
 		fields := strings.Split(line, ",")
 		lengthOfFields := len(fields)
 
-		if lengthOfFields > lengthOfDataFieldSlice {
-			for i := 0; i < lengthOfDataFieldSlice; i++ {
-				if strings.HasPrefix(fields[i], `"`) && !(strings.HasSuffix(fields[i], `"`)) {
-					fields[i] = fields[i] + "," + fields[i+1]
-					for j := i + 1; j < lengthOfDataFieldSlice; j++ {
-						fields[j] = fields[j+1]
-					}
-					lengthOfFields--
-				}
-			}
+		if lengthOfFields != lengthOfDataFieldSlice {
+			// for i := 0; i < lengthOfDataFieldSlice; i++ {
+			// 	if strings.HasPrefix(fields[i], `"`) && !(strings.HasSuffix(fields[i], `"`)) {
+			// 		fields[i] = fields[i] + "," + fields[i+1]
+			// 		for j := i + 1; j < lengthOfDataFieldSlice; j++ {
+			// 			fields[j] = fields[j+1]
+			// 		}
+			// 		lengthOfFields--
+			// 	}
+			// }
+			continue
 		}
 
 		for i := 0; i < lengthOfDataFieldSlice; i++ {

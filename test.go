@@ -12,7 +12,7 @@ import (
 
 func main() {
 	readClicks("/tmp/stat_clicks_1681.csv")
-	readInstalls("/tmp/stat_installs_1681.csv")
+	//	readInstalls("/tmp/stat_installs_1681.csv")
 }
 
 func IOS8601(timefield string) string {
@@ -24,35 +24,69 @@ func IOS8601(timefield string) string {
 }
 
 // type Install struct {
-// 	id               string			0
-// 	tracking_id      string			1
-// 	stat_click_id    string			2
-// 	session_ip       string			3
-// 	session_datetime time.Time		4
-// 	publisher_id     int64			5
-// 	ad_network_id    int64			6
-// 	advertiser_id    int64			7
-// 	site_id          int64			8
-// 	campaign_id      int64			9
-// 	site_event_id    int64			10
-// 	publisher_ref_id string			11
-// 	device_ip        string			12
-// 	sdk              string			13
-// 	device_carrier   string			14
-// 	language         string			15
-// 	package_name     string			16
-// 	app_name         string			17
-// 	country_id       int64			18
-// 	region_id        int64			19
-// 	user_agent       string			20
-// 	request_url      string			21
-// 	created          time.Time		22
-// 	modified         time.Time		23
-// 	latitude         float64		24
-// 	longitude        float64		25
-// 	match_type       string			26
-// 	install_date     time.Time		27
+// 	id               string			0	u
+// 	tracking_id      string			1	u
+// 	stat_click_id    string			2	u
+// 	session_ip       string			3	gr
+// 	session_datetime time.Time		4	u
+// 	publisher_id     int64			5	gr
+// 	ad_network_id    int64			6	gr
+// 	advertiser_id    int64			7	gr
+// 	site_id          int64			8	gr
+// 	campaign_id      int64			9	gr
+// 	site_event_id    int64			10	gr
+// 	publisher_ref_id string			11	gr
+// 	device_ip        string			12	gr		top 5
+// 	sdk              string			13	gr		t
+// 	device_carrier   string			14	gr		t
+// 	language         string			15	gr		t
+// 	package_name     string			16	gr
+// 	app_name         string			17	gr		t
+// 	country_id       int64			18	gr
+// 	region_id        int64			19	gr
+// 	user_agent       string			20	too variable
+// 	request_url      string			21	u
+// 	created          time.Time		22	u
+// 	modified         time.Time		23	u
+// 	latitude         float64		24	u
+// 	longitude        float64		25	u
+// 	match_type       string			26	u
+// 	install_date     time.Time		27	u
 // }
+
+//	same for both
+//  5 6 7 8 9 10 13 14 15 17 18 19
+//  publisher_id     int64			5	gr
+//  ad_network_id    int64			6	gr
+//  advertiser_id    int64			7	gr
+//  site_id          int64			8	gr
+//  campaign_id      int64			9	gr
+// 	sdk              string			13	gr
+// 	device_carrier   string			14	gr
+// 	language         string			15	gr
+// 	package_name     string			16	gr
+// 	app_name         string			17	gr
+// 	country_id       int64			18	gr
+// 	region_id        int64			19	gr
+
+// unique to Install
+// 0	id					string
+// 1	tracking_id			string
+// 2	stat_click_id		string
+// 3	session_ip			string
+// 4	session_datetime	time.Time
+// 10	site_event_id		string
+// 11	publisher_ref_id	string
+// 12	device_ip			string
+// 21	request_url			string
+// 20	user_agent			string
+// 21	request_url			string
+// 22	created				time.Time
+// 23	modified			time.Time
+// 24	latitude			float64
+// 25	longitude			float64
+// 26	match_type			string
+// 27	install_date		time.Time
 
 // type Click struct {
 // id					string		0
@@ -78,12 +112,74 @@ func IOS8601(timefield string) string {
 // latitude				float64		20
 // longitude			float64		21
 // }
+/*
 
+2 3 4 5 6 9 10 11 12 13 14 15
+// publisher_id			int			2
+// ad_network_id		int			3
+// advertiser_id		int			4
+// site_id				int			5
+// campaign_id			int			6
+// sdk					string		9
+// device_carrier		string		10
+// language				string		11
+// package_name			string		12
+// app_name				string		13
+// country_id			int			14
+// region_id			int			15
+
+
+unique to Click
+0	id					string
+1	tracking_id			string
+7	publisher_ref_id	string
+8	device_ip			string
+16	user_agent			string
+17	request_url			string
+18	created				time.Time
+19	modified			time.Time
+20	latitude			float64
+21	longitude			float64
+
+
+--------- same for clicks  ---------
+// publisher_id			int			2
+// ad_network_id		int			3
+// advertiser_id		int			4
+// site_id				int			5
+// campaign_id			int			6
+// sdk					string		9
+// device_carrier		string		10
+// language				string		11
+// package_name			string		12
+// app_name				string		13
+// country_id			int			14
+// region_id			int			15
+
+
+--------- same for Installs  ---------
+//  publisher_id     int64			5	gr
+//  ad_network_id    int64			6	gr
+//  advertiser_id    int64			7	gr
+//  site_id          int64			8	gr
+//  campaign_id      int64			9	gr
+// 	sdk              string			13	gr
+// 	device_carrier   string			14	gr
+// 	language         string			15	gr
+// 	package_name     string			16	gr
+// 	app_name         string			17	gr
+// 	country_id       int64			18	gr
+// 	region_id        int64			19	gr
+
+
+
+
+*/
 func readClicks(path string) {
 
 	var jsonString []string
 
-	url := "http://dp-joshp01-dev.sea1.office.priv:9200/clicks/clickdata"
+	url := "http://dp-joshp01-dev.sea1.office.priv:9200/database2/clicks"
 	dataFieldsClicks := `"id","tracking_id","publisher_id","ad_network_id","advertiser_id","site_id","campaign_id","publisher_ref_id","device_ip","sdk","device_carrier","language","package_name","app_name","country_id","region_id","user_agent","request_url","created","modified","latitude","longitude"`
 	dataFieldsSlice := strings.Split(dataFieldsClicks, ",")
 	lengthOfDataFieldSlice := len(dataFieldsSlice)

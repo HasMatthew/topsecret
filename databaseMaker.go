@@ -112,7 +112,7 @@ func generateLatency() int64 {
 func main() {
 
 	// define the url to post to in elasticSearch
-	url := "http://dp-kewei01-dev.sea1.office.priv:9200/clients/ids"
+	url := "http://dp-kewei01-dev.sea1.office.priv:9200/samples/ids"
 
 	// seed the random number generator to prevent repeated values each time the program runs
 	rand.Seed(time.Now().UTC().UnixNano())
@@ -122,7 +122,7 @@ func main() {
 	var test int              // this is used to test if the event is posted to the database via a random numver in the nested for loop below
 	currentTime := time.Now() // start generating time from now and work backwords
 
-	for i := 0; i <= 30; i++ {
+	for true {
 
 		// generate the event that may be added to the database
 		thing = makeEvent()
@@ -156,11 +156,7 @@ func main() {
 					return
 				}
 
-<<<<<<< HEAD
-				fmt.Println(string(eventJSONstring))
-=======
 				// fmt.Println(string(eventJSONstring))
->>>>>>> upstream/master
 
 				req, err := http.NewRequest("POST", url, bytes.NewBuffer(eventJSONstring))
 				if err != nil {

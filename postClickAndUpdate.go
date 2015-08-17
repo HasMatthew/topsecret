@@ -20,8 +20,9 @@ type ClickUni struct {
 	Request_url      string    //17
 	Created          time.Time //18
 	Modified         time.Time //19
-	Latitude         float64   //20
-	Longitude        float64   //21
+	// Latitude         float64   //20
+	// Longitude        float64   //21
+	Location string // 20 21
 }
 
 type InstallUnq struct {
@@ -37,10 +38,11 @@ type InstallUnq struct {
 	Request_url      string
 	Created          time.Time
 	Modified         time.Time
-	Latitude         float64
-	Longitude        float64
-	Match_type       string
-	Install_date     time.Time
+	// Latitude         float64
+	// Longitude        float64
+	Location     string
+	Match_type   string
+	Install_date time.Time
 }
 
 type Install struct {
@@ -142,8 +144,12 @@ func PostClicks(reader *csv.Reader) {
 		clicks.Created, _ = time.Parse("2006-01-02 15:04:05", eachRecord[18])
 		clicks.Modified, _ = time.Parse("2006-01-02 15:04:05", eachRecord[19])
 
-		clicks.Latitude, _ = strconv.ParseFloat(eachRecord[20], 64)
-		clicks.Longitude, _ = strconv.ParseFloat(eachRecord[21], 64)
+		// clicks.Latitude, _ = strconv.ParseFloat(eachRecord[20], 64)
+		// clicks.Longitude, _ = strconv.ParseFloat(eachRecord[21], 64)
+		if eachRecord[20] != "NULL" && eachRecord[21] != "NULL" {
+
+			clicks.Location = eachRecord[20] + "," + eachRecord[21]
+		}
 
 		temp.Clicks = clicks
 
@@ -182,25 +188,14 @@ func PostClicks(reader *csv.Reader) {
 					fmt.Println(err)
 				}
 
-				temp.Installs = install.Installs
+				temp.Installs = install.Installs // combine the install data to the clicks data if they are related
 
 				//find out the id of that hit in the index
 				docId := hit.Id
 				fmt.Println(docId)
 
-				//delete the data
-				client.Delete().Index("alldata").Type("clinstall").Id(docId).Do()
-
-				//post the combine data (related click and install data when install.stat_click_id = click_id) to the same id
-				_, err = client.Index().
-					Index("alldata").
-					Type("clinstall").
-					Id(docId).
-					BodyJson(temp).
-					Do()
-				if err != nil {
-					fmt.Println(err)
-				}
+				//update to be the combination of click and install
+				client.Update().Index("alldata").Type("clinstall").Id(docId).Doc(temp).Do()
 
 				break
 			}

@@ -57,15 +57,17 @@ type InstallUnq struct {
 	Request_url      string    //21
 	Created          time.Time //22
 	Modified         time.Time //23
-	Latitude         float64   //24
-	Longitude        float64   //25
-	Match_type       string    //26
-	Install_date     time.Time //27
+	// Latitude         float64   //24
+	// Longitude        float64   //25
+	Location     string    // 24 25
+	Match_type   string    //26
+	Install_date time.Time //27
 }
 
 func main() {
 	//make a csv reader for that csv file
 	csvfile, err := os.Open("/tmp/stat_installs_1681.csv")
+	//csvfile, err := os.Open("sample20data.csv")
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -133,8 +135,12 @@ func PostInstalls(reader *csv.Reader) {
 			uniques.Match_type = eachRecord[26]
 
 			uniques.Site_event_id, _ = strconv.ParseInt(eachRecord[10], 10, 64)
-			uniques.Latitude, _ = strconv.ParseFloat(eachRecord[24], 64)
-			uniques.Longitude, _ = strconv.ParseFloat(eachRecord[25], 64)
+			// uniques.Latitude, _ = strconv.ParseFloat(eachRecord[24], 64)
+			// uniques.Longitude, _ = strconv.ParseFloat(eachRecord[25], 64)
+			if eachRecord[24] != "NULL" && eachRecord[25] != "NULL" {
+
+				uniques.Location = eachRecord[24] + "," + eachRecord[25]
+			}
 
 			uniques.Session_datetime, _ = time.Parse("2006-01-02 15:04:05", eachRecord[4])
 			uniques.Created, _ = time.Parse("2006-01-02 15:04:05", eachRecord[22])

@@ -19,8 +19,16 @@ Common Fields {
   "is_bundle":        Bool
 }
 impression {
-  
+  "id":               string
+  "created":          time.Time
+  "device_ip":        string
+  "country_code":     string
+  "region_code":      string
+  "postal_code":      int32
+  "latitude":         float64
+  "longitude":        float64
 }
+
 click {
   "id":               string
   "created":          time.Time
@@ -69,6 +77,16 @@ Event {
 
 
 
+
+
+
+
+
+
+
+
+
+
 Unique Fields {
   "id":               string
   "created":          time.Time
@@ -84,14 +102,6 @@ Unique Fields {
   "latitude":         float64
   "longitude":        float64
   }
-
-
-
-
-
-
-
-
 
 All Fields
 }

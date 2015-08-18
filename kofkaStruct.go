@@ -1,6 +1,7 @@
 import "time"
 
 type Document struct {
+	Common     commonInfo
 	Click      click
 	Impression impression
 	Install    install
@@ -9,97 +10,130 @@ type Document struct {
 }
 
 type commonInfo struct {
-	google_aid        string
-	windows_aid       string
-	ios_ifa           string
-	language          string
-	currency_code     string
-	site_id           int64
-	advertiser_id     int64
-	package_name      string
-	publisher_id      int64
-	ad_network_id     int64
-	agency_id         int64
-	campaign_id       int64
-	publisher_user_id string
+	GoogleAid       string
+	WindowsAid      string
+	IosIfa          string
+	Language        string
+	CurrencyCode    string
+	SiteId          int64
+	AdvertiserId    int64
+	PackageName     string
+	PublisherId     int64
+	AdNetworkId     int64
+	AgencyId        int64
+	CampaignId      int64
+	PublisherUserId string
 }
 
 type impression struct {
-	id               string
-	created          time.Time
-	device_ip        string
-	country_code     string
-	region_code      string
-	postal_code      int32
-	latitude         float64
-	longitude        float64
-	wurfl_brand_name string
-	wurfl_model_name string
-	wurfl_device_os  string
+	Id             string
+	Created        time.Time
+	DeviceIp       string
+	CountryCode    string
+	RegionCode     string
+	PostalCode     int32
+	Latitude       float64
+	Longitude      float64
+	WurflBrandName string
+	WurflModelName string
+	WurflDeviceOs  string
 }
 
 type click struct {
-	id                 string
-	created            time.Time
-	device_ip          string
-	stat_impression_id string
-	country_code       string
-	region_code        string
-	postal_code        int32
-	latitude           float64
-	longitude          float64
-	wurfl_brand_name   string
-	wurfl_model_name   string
-	wurfl_device_os    string
+	Id               string
+	Created          time.Time
+	DeviceIp         string
+	StatImpressionId string
+	CountryCode      string
+	RegionCode       string
+	PostalCode       int32
+	Latitude         float64
+	Longitude        float64
+	WurflBrandName   string
+	WurflModelName   string
+	WurflDeviceOs    string
 }
 
 type install struct {
-	id               string
-	created          time.Time
-	device_ip        string
-	stat_click_id    string
-	country_code     string
-	region_code      string
-	postal_code      int32
-	latitude         float64
-	longitude        float64
-	wurfl_brand_name string
-	wurfl_model_name string
-	wurfl_device_os  string
+	Id             string
+	Created        time.Time
+	DeviceIp       string
+	StatClickId    string
+	CountryCode    string
+	RegionCode     string
+	PostalCode     int32
+	Latitude       float64
+	Longitude      float64
+	WurflBrandName string
+	WurflModelName string
+	WurflDeviceOs  string
 }
 
 type open struct {
-	id               string
-	created          time.Time
-	device_ip        string
-	stat_install_id  string
-	country_code     string
-	region_code      string
-	postal_code      int32
-	latitude         float64
-	longitude        float64
-	wurfl_brand_name string
-	wurfl_model_name string
-	wurfl_device_os  string
-	Click            click
-	Impression       impression
+	Id             string
+	Created        time.Time
+	DeviceIp       string
+	StatInstallId  string
+	CountryCode    string
+	RegionCode     string
+	PostalCode     int32
+	Latitude       float64
+	Longitude      float64
+	WurflBrandName string
+	WurflModelName string
+	WurflDeviceOs  string
+	Click          click
+	Impression     impression
 }
 
 type event struct {
-	id               string
-	created          time.Time
-	device_ip        string
-	stat_open_id     string
-	country_code     string
-	region_code      string
-	postal_code      int32
-	latitude         float64
-	longitude        float64
-	wurfl_brand_name string
-	wurfl_model_name string
-	wurfl_device_os  string
-	Click            click
-	Impression       impression
+	Id             string
+	Created        time.Time
+	DeviceIp       string
+	StatOpenId     string
+	CountryCode    string
+	RegionCode     string
+	PostalCode     int32
+	Latitude       float64
+	Longitude      float64
+	WurflBrandName string
+	WurflModelName string
+	WurflDeviceOs  string
+	Click          click
+	Impression     impression
+}
+
+type allFields struct {
+	Id              string
+	Created         time.Time
+	DeviceIp        string
+	GoogleAid       string
+	WindowsAid      string
+	IosIfa          string
+	Language        string
+	StatEventId     string
+	StatInstallId   string
+	StatOpenId      string
+	StatClickId     string
+	CurrencyCode    string
+	SiteId          int64
+	AdvertiserId    int64
+	PackageName     string
+	PublisherId     int64
+	AdNetworkId     int64
+	AgencyId        int64
+	CampaignId      int64
+	CountryCode     string
+	RegionCode      string
+	PostalCode      int32
+	WurflBrandName  string
+	WurflModelName  string
+	WurflDeviceOs   string
+	PublisherUserId string
+	BundleSiteId    int64
+	IsBundle        bool
+	Latitude        float64
+	Longitude       float64
 }
 
 // {

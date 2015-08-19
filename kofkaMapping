@@ -18,6 +18,16 @@
                      "Id": {
                         "type": "string"
                      },
+                     "Location": {
+                        "properties": {
+                           "Lat": {
+                              "type": "long"
+                           },
+                           "Lon": {
+                              "type": "long"
+                           }
+                        }
+                     },
                      "PostalCode": {
                         "type": "long"
                      },
@@ -92,6 +102,16 @@
                      },
                      "Id": {
                         "type": "string"
+                     },
+                     "Location": {
+                        "properties": {
+                           "Lat": {
+                              "type": "long"
+                           },
+                           "Lon": {
+                              "type": "long"
+                           }
+                        }
                      },
                      "PostalCode": {
                         "type": "long"
@@ -169,6 +189,16 @@
                      "Id": {
                         "type": "string"
                      },
+                     "Location": {
+                        "properties": {
+                           "Lat": {
+                              "type": "long"
+                           },
+                           "Lon": {
+                              "type": "long"
+                           }
+                        }
+                     },
                      "PostalCode": {
                         "type": "long"
                      },
@@ -206,6 +236,16 @@
                      },
                      "Id": {
                         "type": "string"
+                     },
+                     "Location": {
+                        "properties": {
+                           "Lat": {
+                              "type": "long"
+                           },
+                           "Lon": {
+                              "type": "long"
+                           }
+                        }
                      },
                      "PostalCode": {
                         "type": "long"

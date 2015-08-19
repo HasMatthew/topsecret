@@ -12,15 +12,15 @@ type GeoLocation struct {
 }
 
 type Document struct {
-	Common     CommonInfo
-	Click      Click
-	Impression Impression
-	Install    Install
-	Events     []Event
-	Opens      []Open
+	Common     CommonInfoStr
+	Click      ClickStr
+	Impression ImpressionStr
+	Install    InstallStr
+	Events     []EventStr
+	Opens      []OpenStr
 }
 
-type CommonInfo struct {
+type CommonInfoStr struct {
 	GoogleAid       string
 	WindowsAid      string
 	IosIfa          string
@@ -36,7 +36,7 @@ type CommonInfo struct {
 	PublisherUserId string
 }
 
-type Impression struct {
+type ImpressionStr struct {
 	Id             string
 	Created        time.Time
 	DeviceIp       string
@@ -49,20 +49,20 @@ type Impression struct {
 	WurflDeviceOs  string
 }
 
-type Click struct {
+type ClickStr struct {
 	Id             string
 	Created        time.Time
 	DeviceIp       string
 	CountryCode    string
 	RegionCode     string
 	PostalCode     int32
-	location       GeoLocation
+	Location       GeoLocation
 	WurflBrandName string
 	WurflModelName string
 	WurflDeviceOs  string
 }
 
-type Install struct {
+type InstallStr struct {
 	Id               string
 	Created          time.Time
 	DeviceIp         string
@@ -71,13 +71,13 @@ type Install struct {
 	CountryCode      string
 	RegionCode       string
 	PostalCode       int32
-	location         GeoLocation
+	Location         GeoLocation
 	WurflBrandName   string
 	WurflModelName   string
 	WurflDeviceOs    string
 }
 
-type Open struct {
+type OpenStr struct {
 	Id               string
 	Created          time.Time
 	DeviceIp         string
@@ -87,13 +87,13 @@ type Open struct {
 	CountryCode      string
 	RegionCode       string
 	PostalCode       int32
-	location         GeoLocation
+	Location         GeoLocation
 	WurflBrandName   string
 	WurflModelName   string
 	WurflDeviceOs    string
 }
 
-type Event struct {
+type EventStr struct {
 	Id               string
 	Created          time.Time
 	DeviceIp         string
@@ -104,13 +104,13 @@ type Event struct {
 	CountryCode      string
 	RegionCode       string
 	PostalCode       int32
-	location         GeoLocation
+	Location         GeoLocation
 	WurflBrandName   string
 	WurflModelName   string
 	WurflDeviceOs    string
 }
 
-type AllFields struct {
+type AllFieldsStr struct {
 	LogType          string
 	Id               string
 	Created          time.Time
@@ -141,7 +141,7 @@ type AllFields struct {
 	PublisherUserId  string
 	BundleSiteId     int64
 	IsBundle         bool
-	location         GeoLocation
+	Location         GeoLocation
 }
 
 func main() {

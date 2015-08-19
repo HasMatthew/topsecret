@@ -57,48 +57,51 @@ type click struct {
 }
 
 type install struct {
-	Id             string
-	Created        time.Time
-	DeviceIp       string
-	StatClickId    string
-	CountryCode    string
-	RegionCode     string
-	PostalCode     int32
-	location       GeoLocation
-	WurflBrandName string
-	WurflModelName string
-	WurflDeviceOs  string
+	Id               string
+	Created          time.Time
+	DeviceIp         string
+	StatImpressionId string
+	StatClickId      string
+	CountryCode      string
+	RegionCode       string
+	PostalCode       int32
+	location         GeoLocation
+	WurflBrandName   string
+	WurflModelName   string
+	WurflDeviceOs    string
 }
 
 type open struct {
-	Id             string
-	Created        time.Time
-	DeviceIp       string
-	StatClickId    string
-	StatInstallId  string
-	CountryCode    string
-	RegionCode     string
-	PostalCode     int32
-	location       GeoLocation
-	WurflBrandName string
-	WurflModelName string
-	WurflDeviceOs  string
+	Id               string
+	Created          time.Time
+	DeviceIp         string
+	StatImpressionId string
+	StatClickId      string
+	StatInstallId    string
+	CountryCode      string
+	RegionCode       string
+	PostalCode       int32
+	location         GeoLocation
+	WurflBrandName   string
+	WurflModelName   string
+	WurflDeviceOs    string
 }
 
 type event struct {
-	Id             string
-	Created        time.Time
-	DeviceIp       string
-	StatClickId    string
-	StatInstallId  string
-	StatOpenId     string
-	CountryCode    string
-	RegionCode     string
-	PostalCode     int32
-	location       GeoLocation
-	WurflBrandName string
-	WurflModelName string
-	WurflDeviceOs  string
+	Id               string
+	Created          time.Time
+	DeviceIp         string
+	StatImpressionId string
+	StatClickId      string
+	StatInstallId    string
+	StatOpenId       string
+	CountryCode      string
+	RegionCode       string
+	PostalCode       int32
+	location         GeoLocation
+	WurflBrandName   string
+	WurflModelName   string
+	WurflDeviceOs    string
 }
 
 type allFields struct {

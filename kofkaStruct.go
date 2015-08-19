@@ -16,8 +16,8 @@ type Document struct {
 	Click      ClickStr
 	Impression ImpressionStr
 	Install    InstallStr
-	Events     []EventStr
-	Opens      []OpenStr
+	Events     EventStr
+	Opens      OpenStr
 }
 
 type CommonInfoStr struct {
@@ -119,7 +119,6 @@ type AllFieldsStr struct {
 	WindowsAid       string
 	IosIfa           string
 	Language         string
-	StatEventId      string
 	StatInstallId    string
 	StatOpenId       string
 	StatClickId      string
@@ -139,8 +138,6 @@ type AllFieldsStr struct {
 	WurflModelName   string
 	WurflDeviceOs    string
 	PublisherUserId  string
-	BundleSiteId     int64
-	IsBundle         bool
 	Location         GeoLocation
 }
 

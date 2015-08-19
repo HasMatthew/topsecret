@@ -1,4 +1,10 @@
-import "time"
+package main
+
+import (
+	"encoding/json"
+	"fmt"
+	"time"
+)
 
 type GeoLocation struct {
 	Lat float64
@@ -6,12 +12,12 @@ type GeoLocation struct {
 }
 
 type Document struct {
-	Common     commonInfo
-	Click      click
-	Impression impression
-	Install    install
-	Events     []event
-	Opens      []open
+	Common     CommonInfo
+	Click      Click
+	Impression Impression
+	Install    Install
+	Events     []Event
+	Opens      []Open
 }
 
 type CommonInfo struct {
@@ -136,6 +142,16 @@ type AllFields struct {
 	BundleSiteId     int64
 	IsBundle         bool
 	location         GeoLocation
+}
+
+func main() {
+	var thing Document
+	b, err := json.Marshal(thing)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	fmt.Println(string(b))
 }
 
 // {

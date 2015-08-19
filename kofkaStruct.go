@@ -1,5 +1,10 @@
 import "time"
 
+type GeoLocation struct {
+	Lat float64
+	Lon float64
+}
+
 type Document struct {
 	Common     commonInfo
 	Click      click
@@ -32,8 +37,7 @@ type impression struct {
 	CountryCode      string
 	RegionCode       string
 	PostalCode       int32
-	Latitude         float64
-	Longitude        float64
+	location         geoLocation
 	StatImpressionId string
 	WurflBrandName   string
 	WurflModelName   string
@@ -49,8 +53,7 @@ type click struct {
 	CountryCode      string
 	RegionCode       string
 	PostalCode       int32
-	Latitude         float64
-	Longitude        float64
+	location         geoLocation
 	WurflBrandName   string
 	WurflModelName   string
 	WurflDeviceOs    string
@@ -65,8 +68,7 @@ type install struct {
 	CountryCode      string
 	RegionCode       string
 	PostalCode       int32
-	Latitude         float64
-	Longitude        float64
+	location         geoLocation
 	WurflBrandName   string
 	WurflModelName   string
 	WurflDeviceOs    string
@@ -82,8 +84,7 @@ type open struct {
 	CountryCode      string
 	RegionCode       string
 	PostalCode       int32
-	Latitude         float64
-	Longitude        float64
+	location         geoLocation
 	WurflBrandName   string
 	WurflModelName   string
 	WurflDeviceOs    string
@@ -102,8 +103,7 @@ type event struct {
 	CountryCode      string
 	RegionCode       string
 	PostalCode       int32
-	Latitude         float64
-	Longitude        float64
+	location         geoLocation
 	WurflBrandName   string
 	WurflModelName   string
 	WurflDeviceOs    string
@@ -142,8 +142,7 @@ type allFields struct {
 	PublisherUserId   string
 	BundleSiteId      int64
 	IsBundle          bool
-	Latitude          float64
-	Longitude         float64
+	location          geoLocation
 }
 
 // {

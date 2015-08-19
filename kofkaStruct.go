@@ -112,7 +112,7 @@ type event struct {
 }
 
 type allFields struct {
-	log_type          string
+	LogType           string
 	Id                string
 	Created           time.Time
 	DeviceIp          string

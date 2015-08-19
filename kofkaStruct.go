@@ -26,17 +26,18 @@ type commonInfo struct {
 }
 
 type impression struct {
-	Id             string
-	Created        time.Time
-	DeviceIp       string
-	CountryCode    string
-	RegionCode     string
-	PostalCode     int32
-	Latitude       float64
-	Longitude      float64
-	WurflBrandName string
-	WurflModelName string
-	WurflDeviceOs  string
+	Id               string
+	Created          time.Time
+	DeviceIp         string
+	CountryCode      string
+	RegionCode       string
+	PostalCode       int32
+	Latitude         float64
+	Longitude        float64
+	StatImpressionId string
+	WurflBrandName   string
+	WurflModelName   string
+	WurflDeviceOs    string
 }
 
 type click struct {
@@ -44,6 +45,7 @@ type click struct {
 	Created          time.Time
 	DeviceIp         string
 	StatImpressionId string
+	StatClickId      string
 	CountryCode      string
 	RegionCode       string
 	PostalCode       int32
@@ -55,85 +57,93 @@ type click struct {
 }
 
 type install struct {
-	Id             string
-	Created        time.Time
-	DeviceIp       string
-	StatClickId    string
-	CountryCode    string
-	RegionCode     string
-	PostalCode     int32
-	Latitude       float64
-	Longitude      float64
-	WurflBrandName string
-	WurflModelName string
-	WurflDeviceOs  string
+	Id               string
+	Created          time.Time
+	DeviceIp         string
+	StatImpressionId string
+	StatClickId      string
+	CountryCode      string
+	RegionCode       string
+	PostalCode       int32
+	Latitude         float64
+	Longitude        float64
+	WurflBrandName   string
+	WurflModelName   string
+	WurflDeviceOs    string
 }
 
 type open struct {
-	Id             string
-	Created        time.Time
-	DeviceIp       string
-	StatInstallId  string
-	CountryCode    string
-	RegionCode     string
-	PostalCode     int32
-	Latitude       float64
-	Longitude      float64
-	WurflBrandName string
-	WurflModelName string
-	WurflDeviceOs  string
-	Click          click
-	Impression     impression
+	Id               string
+	Created          time.Time
+	DeviceIp         string
+	StatImpressionId string
+	StatClickId      string
+	StatInstallId    string
+	CountryCode      string
+	RegionCode       string
+	PostalCode       int32
+	Latitude         float64
+	Longitude        float64
+	WurflBrandName   string
+	WurflModelName   string
+	WurflDeviceOs    string
+	Click            click
+	Impression       impression
 }
 
 type event struct {
-	Id             string
-	Created        time.Time
-	DeviceIp       string
-	StatOpenId     string
-	CountryCode    string
-	RegionCode     string
-	PostalCode     int32
-	Latitude       float64
-	Longitude      float64
-	WurflBrandName string
-	WurflModelName string
-	WurflDeviceOs  string
-	Click          click
-	Impression     impression
+	Id               string
+	Created          time.Time
+	DeviceIp         string
+	StatImpressionId string
+	StatClickId      string
+	StatInstallId    string
+	StatOpenId       string
+	CountryCode      string
+	RegionCode       string
+	PostalCode       int32
+	Latitude         float64
+	Longitude        float64
+	WurflBrandName   string
+	WurflModelName   string
+	WurflDeviceOs    string
+	Click            click
+	Impression       impression
 }
 
 type allFields struct {
-	Id              string
-	Created         time.Time
-	DeviceIp        string
-	GoogleAid       string
-	WindowsAid      string
-	IosIfa          string
-	Language        string
-	StatEventId     string
-	StatInstallId   string
-	StatOpenId      string
-	StatClickId     string
-	CurrencyCode    string
-	SiteId          int64
-	AdvertiserId    int64
-	PackageName     string
-	PublisherId     int64
-	AdNetworkId     int64
-	AgencyId        int64
-	CampaignId      int64
-	CountryCode     string
-	RegionCode      string
-	PostalCode      int32
-	WurflBrandName  string
-	WurflModelName  string
-	WurflDeviceOs   string
-	PublisherUserId string
-	BundleSiteId    int64
-	IsBundle        bool
-	Latitude        float64
-	Longitude       float64
+	log_type          string
+	Id                string
+	Created           time.Time
+	DeviceIp          string
+	GoogleAid         string
+	WindowsAid        string
+	IosIfa            string
+	Language          string
+	StatEventId       string
+	StatInstallId     string
+	StatOpenId        string
+	StatClickId       string
+	StateImpressionId string
+	CurrencyCode      string
+	SiteId            int64
+	AdvertiserId      int64
+	PackageName       string
+	PublisherId       int64
+	AdNetworkId       int64
+	AgencyId          int64
+	CampaignId        int64
+	CountryCode       string
+	RegionCode        string
+	PostalCode        int32
+	WurflBrandName    string
+	WurflModelName    string
+	WurflDeviceOs     string
+	PublisherUserId   string
+	BundleSiteId      int64
+	IsBundle          bool
+	Latitude          float64
+	Longitude         float64
 }
 
 // {

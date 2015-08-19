@@ -19,14 +19,7 @@
                         "type": "string"
                      },
                      "Location": {
-                        "properties": {
-                           "Lat": {
-                              "type": "long"
-                           },
-                           "Lon": {
-                              "type": "long"
-                           }
-                        }
+                        "type": "string"
                      },
                      "PostalCode": {
                         "type": "long"
@@ -104,14 +97,7 @@
                         "type": "string"
                      },
                      "Location": {
-                        "properties": {
-                           "Lat": {
-                              "type": "long"
-                           },
-                           "Lon": {
-                              "type": "long"
-                           }
-                        }
+                        "type": "string"
                      },
                      "PostalCode": {
                         "type": "long"
@@ -157,6 +143,9 @@
                      "Id": {
                         "type": "string"
                      },
+                     "Location": {
+                        "type": "string"
+                     },
                      "PostalCode": {
                         "type": "long"
                      },
@@ -190,14 +179,7 @@
                         "type": "string"
                      },
                      "Location": {
-                        "properties": {
-                           "Lat": {
-                              "type": "long"
-                           },
-                           "Lon": {
-                              "type": "long"
-                           }
-                        }
+                        "type": "string"
                      },
                      "PostalCode": {
                         "type": "long"
@@ -238,14 +220,7 @@
                         "type": "string"
                      },
                      "Location": {
-                        "properties": {
-                           "Lat": {
-                              "type": "long"
-                           },
-                           "Lon": {
-                              "type": "long"
-                           }
-                        }
+                        "type": "string"
                      },
                      "PostalCode": {
                         "type": "long"

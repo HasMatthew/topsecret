@@ -6,11 +6,6 @@ import (
 	"time"
 )
 
-type GeoLocation struct {
-	Lat float64
-	Lon float64
-}
-
 type Document struct {
 	Common     CommonInfoStr
 	Click      ClickStr
@@ -43,7 +38,7 @@ type ImpressionStr struct {
 	CountryCode    string
 	RegionCode     string
 	PostalCode     int32
-	location       GeoLocation
+	Location       string // string(float64 lat) , string(float64 log)
 	WurflBrandName string
 	WurflModelName string
 	WurflDeviceOs  string
@@ -56,7 +51,7 @@ type ClickStr struct {
 	CountryCode    string
 	RegionCode     string
 	PostalCode     int32
-	Location       GeoLocation
+	Location       string
 	WurflBrandName string
 	WurflModelName string
 	WurflDeviceOs  string
@@ -71,7 +66,7 @@ type InstallStr struct {
 	CountryCode      string
 	RegionCode       string
 	PostalCode       int32
-	Location         GeoLocation
+	Location         string
 	WurflBrandName   string
 	WurflModelName   string
 	WurflDeviceOs    string
@@ -87,7 +82,7 @@ type OpenStr struct {
 	CountryCode      string
 	RegionCode       string
 	PostalCode       int32
-	Location         GeoLocation
+	Location         string
 	WurflBrandName   string
 	WurflModelName   string
 	WurflDeviceOs    string
@@ -104,7 +99,7 @@ type EventStr struct {
 	CountryCode      string
 	RegionCode       string
 	PostalCode       int32
-	Location         GeoLocation
+	Location         string
 	WurflBrandName   string
 	WurflModelName   string
 	WurflDeviceOs    string
@@ -138,7 +133,8 @@ type AllFieldsStr struct {
 	WurflModelName   string
 	WurflDeviceOs    string
 	PublisherUserId  string
-	Location         GeoLocation
+	Latitude         float64
+	Longitude        float64
 }
 
 func main() {

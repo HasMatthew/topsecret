@@ -14,7 +14,7 @@ type Document struct {
 	Opens      []open
 }
 
-type commonInfo struct {
+type CommonInfo struct {
 	GoogleAid       string
 	WindowsAid      string
 	IosIfa          string
@@ -30,7 +30,7 @@ type commonInfo struct {
 	PublisherUserId string
 }
 
-type impression struct {
+type Impression struct {
 	Id             string
 	Created        time.Time
 	DeviceIp       string
@@ -43,7 +43,7 @@ type impression struct {
 	WurflDeviceOs  string
 }
 
-type click struct {
+type Click struct {
 	Id             string
 	Created        time.Time
 	DeviceIp       string
@@ -56,7 +56,7 @@ type click struct {
 	WurflDeviceOs  string
 }
 
-type install struct {
+type Install struct {
 	Id               string
 	Created          time.Time
 	DeviceIp         string
@@ -71,7 +71,7 @@ type install struct {
 	WurflDeviceOs    string
 }
 
-type open struct {
+type Open struct {
 	Id               string
 	Created          time.Time
 	DeviceIp         string
@@ -87,7 +87,7 @@ type open struct {
 	WurflDeviceOs    string
 }
 
-type event struct {
+type Event struct {
 	Id               string
 	Created          time.Time
 	DeviceIp         string
@@ -104,37 +104,38 @@ type event struct {
 	WurflDeviceOs    string
 }
 
-type allFields struct {
-	LogType         string
-	Id              string
-	Created         time.Time
-	DeviceIp        string
-	GoogleAid       string
-	WindowsAid      string
-	IosIfa          string
-	Language        string
-	StatEventId     string
-	StatInstallId   string
-	StatOpenId      string
-	StatClickId     string
-	CurrencyCode    string
-	SiteId          int64
-	AdvertiserId    int64
-	PackageName     string
-	PublisherId     int64
-	AdNetworkId     int64
-	AgencyId        int64
-	CampaignId      int64
-	CountryCode     string
-	RegionCode      string
-	PostalCode      int32
-	WurflBrandName  string
-	WurflModelName  string
-	WurflDeviceOs   string
-	PublisherUserId string
-	BundleSiteId    int64
-	IsBundle        bool
-	location        GeoLocation
+type AllFields struct {
+	LogType          string
+	Id               string
+	Created          time.Time
+	DeviceIp         string
+	GoogleAid        string
+	WindowsAid       string
+	IosIfa           string
+	Language         string
+	StatEventId      string
+	StatInstallId    string
+	StatOpenId       string
+	StatClickId      string
+	StatImpressionId string
+	CurrencyCode     string
+	SiteId           int64
+	AdvertiserId     int64
+	PackageName      string
+	PublisherId      int64
+	AdNetworkId      int64
+	AgencyId         int64
+	CampaignId       int64
+	CountryCode      string
+	RegionCode       string
+	PostalCode       int32
+	WurflBrandName   string
+	WurflModelName   string
+	WurflDeviceOs    string
+	PublisherUserId  string
+	BundleSiteId     int64
+	IsBundle         bool
+	location         GeoLocation
 }
 
 // {

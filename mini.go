@@ -95,6 +95,7 @@ type OpenStr struct {
 	WurflBrandName   string
 	WurflModelName   string
 	WurflDeviceOs    string
+	ClickInOpen      ClickStr
 }
 
 type EventStr struct {
@@ -112,6 +113,7 @@ type EventStr struct {
 	WurflBrandName   string
 	WurflModelName   string
 	WurflDeviceOs    string
+	ClickInEvent     ClickStr
 }
 
 type AllFieldsStr struct {
@@ -223,6 +225,151 @@ func POST(w http.ResponseWriter, r *http.Request) {
 			structured.QueryLatency: time.Since(QueryStart)})
 }
 
+func UpdateCommonData(originDoc Document, clickData AllFieldsStr) Document {
+
+	if originDoc.Common.AdNetworkId == 0 {
+		originDoc.Common.AdNetworkId = clickData.AdNetworkId
+	}
+	if originDoc.Common.AdvertiserId == 0 {
+		originDoc.Common.AdvertiserId = clickData.AdvertiserId
+	}
+	if originDoc.Common.AgencyId == 0 {
+		originDoc.Common.AgencyId = clickData.AgencyId
+	}
+	if originDoc.Common.CampaignId == 0 {
+		originDoc.Common.CampaignId = clickData.CampaignId
+	}
+	if originDoc.Common.CurrencyCode == "" {
+		originDoc.Common.CurrencyCode = clickData.CurrencyCode
+	}
+	if originDoc.Common.GoogleAid == "" {
+		originDoc.Common.GoogleAid = clickData.GoogleAid
+	}
+	if originDoc.Common.IosIfa == "" {
+		originDoc.Common.IosIfa = clickData.IosIfa
+	}
+	if originDoc.Common.Language == "" {
+		originDoc.Common.Language = clickData.Language
+	}
+	if originDoc.Common.PackageName == "" {
+		originDoc.Common.PackageName = clickData.PackageName
+	}
+	if originDoc.Common.PublisherId == 0 {
+		originDoc.Common.PublisherId = clickData.PublisherId
+	}
+	if originDoc.Common.PublisherUserId == "" {
+		originDoc.Common.PublisherUserId = clickData.PublisherUserId
+	}
+	if originDoc.Common.SiteId == 0 {
+		originDoc.Common.SiteId = clickData.SiteId
+	}
+	if originDoc.Common.WindowsAid == "" {
+		originDoc.Common.WindowsAid = clickData.WindowsAid
+	}
+
+	return originDoc
+}
+
+func AddClickToOpen(originDoc Document, clickData AllFieldsStr) Document {
+
+	originDoc.Opens.ClickInOpen.CountryCode = clickData.CountryCode
+	originDoc.Opens.ClickInOpen.Created = clickData.Created
+	originDoc.Opens.ClickInOpen.DeviceIp = clickData.DeviceIp
+	originDoc.Opens.ClickInOpen.Id = clickData.Id
+	originDoc.Opens.ClickInOpen.Location = location
+	originDoc.Opens.ClickInOpen.PostalCode = clickData.PostalCode
+	originDoc.Opens.ClickInOpen.RegionCode = clickData.RegionCode
+	originDoc.Opens.ClickInOpen.WurflBrandName = clickData.WurflBrandName
+	originDoc.Opens.ClickInOpen.WurflDeviceOs = clickData.WurflDeviceOs
+	originDoc.Opens.ClickInOpen.WurflModelName = clickData.WurflModelName
+
+	return originDoc
+}
+
+func AddClickToEvent(originDoc Document, clickData AllFieldsStr) Document {
+
+	originDoc.Events.ClickInEvent.CountryCode = clickData.CountryCode
+	originDoc.Events.ClickInEvent.Created = clickData.Created
+	originDoc.Events.ClickInEvent.DeviceIp = clickData.DeviceIp
+	originDoc.Events.ClickInEvent.Id = clickData.Id
+	originDoc.Events.ClickInEvent.Location = location
+	originDoc.Events.ClickInEvent.PostalCode = clickData.PostalCode
+	originDoc.Events.ClickInEvent.RegionCode = clickData.RegionCode
+	originDoc.Events.ClickInEvent.WurflBrandName = clickData.WurflBrandName
+	originDoc.Events.ClickInEvent.WurflDeviceOs = clickData.WurflDeviceOs
+	originDoc.Events.ClickInEvent.WurflModelName = clickData.WurflModelName
+
+	return originDoc
+}
+
+func AddImpression(originDoc Document, impressionData AllFieldsStr) Document {
+
+	originDoc.Impression.CountryCode = impressionData.CountryCode
+	originDoc.Impression.Created = impressionData.Created
+	originDoc.Impression.DeviceIp = impressionData.DeviceIp
+	originDoc.Impression.Id = impressionData.Id
+	originDoc.Impression.Location = location
+	originDoc.Impression.PostalCode = impressionData.PostalCode
+	originDoc.Impression.RegionCode = impressionData.RegionCode
+	originDoc.Impression.WurflBrandName = impressionData.WurflBrandName
+	originDoc.Impression.WurflDeviceOs = impressionData.WurflDeviceOs
+	originDoc.Impression.WurflModelName = impressionData.WurflModelName
+
+	return originDoc
+}
+
+func AddClick(originDoc Document, clickData AllFieldsStr) Document {
+
+	originDoc.Click.CountryCode = clickData.CountryCode
+	originDoc.Click.Created = clickData.Created
+	originDoc.Click.DeviceIp = clickData.DeviceIp
+	originDoc.Click.Id = clickData.Id
+	originDoc.Click.Location = location
+	originDoc.Click.PostalCode = clickData.PostalCode
+	originDoc.Click.RegionCode = clickData.RegionCode
+	originDoc.Click.WurflBrandName = clickData.WurflBrandName
+	originDoc.Click.WurflDeviceOs = clickData.WurflDeviceOs
+	originDoc.Click.WurflModelName = clickData.WurflModelName
+
+	return originDoc
+}
+
+func AddInstall(originDoc Document, installData AllFieldsStr) {
+
+	originDoc.Install.CountryCode = installData.CountryCode
+	originDoc.Install.Created = installData.Created
+	originDoc.Install.DeviceIp = installData.DeviceIp
+	originDoc.Install.Id = installData.Id
+	originDoc.Install.Location = location
+	originDoc.Install.PostalCode = installData.PostalCode
+	originDoc.Install.RegionCode = installData.RegionCode
+	originDoc.Install.StatClickId = installData.StatClickId
+	originDoc.Install.StatImpressionId = installData.StatImpressionId
+	originDoc.Install.WurflBrandName = installData.WurflBrandName
+	originDoc.Install.WurflDeviceOs = installData.WurflDeviceOs
+	originDoc.Install.WurflModelName = installData.WurflModelName
+
+}
+
+func AddOpen(originDoc Document, clickData AllFieldsStr) {
+
+	originDoc.Opens.CountryCode = clickData.CountryCode
+	originDoc.Opens.Created = clickData.Created
+	originDoc.Opens.DeviceIp = clickData.DeviceIp
+	originDoc.Opens.Id = clickData.Id
+	originDoc.Opens.Location = location
+	originDoc.Opens.PostalCode = clickData.PostalCode
+	originDoc.Opens.RegionCode = clickData.RegionCode
+	originDoc.Opens.StatImpressionId = clickData.StatImpressionId
+	originDoc.Opens.StatClickId = clickData.StatClickId
+	originDoc.Opens.StatInstallId = clickData.StatInstallId
+	originDoc.Opens.WurflBrandName = clickData.WurflBrandName
+	originDoc.Opens.WurflDeviceOs = clickData.WurflDeviceOs
+	originDoc.Opens.WurflModelName = clickData.WurflModelName
+
+	return originDoc
+}
+
 func NewImpression(data AllFieldsStr) Document {
 
 	var impression Document
@@ -234,7 +381,7 @@ func NewImpression(data AllFieldsStr) Document {
 	impression.Common.AdvertiserId = data.AdvertiserId
 	impression.Common.AgencyId = data.AgencyId
 	impression.Common.CampaignId = data.CampaignId
-	impression.Common.CurrencyCode = data.CountryCode
+	impression.Common.CurrencyCode = data.CurrencyCode
 	impression.Common.GoogleAid = data.GoogleAid
 	impression.Common.IosIfa = data.IosIfa
 	impression.Common.Language = data.Language
@@ -270,7 +417,7 @@ func NewClick(data AllFieldsStr) Document {
 	click.Common.AdvertiserId = data.AdvertiserId
 	click.Common.AgencyId = data.AgencyId
 	click.Common.CampaignId = data.CampaignId
-	click.Common.CurrencyCode = data.CountryCode
+	click.Common.CurrencyCode = data.CurrencyCode
 	click.Common.GoogleAid = data.GoogleAid
 	click.Common.IosIfa = data.IosIfa
 	click.Common.Language = data.Language
@@ -292,7 +439,6 @@ func NewClick(data AllFieldsStr) Document {
 	click.Click.WurflModelName = data.WurflModelName
 
 	return click
-
 }
 
 func NewInstall(data AllFieldsStr) Document {
@@ -306,7 +452,7 @@ func NewInstall(data AllFieldsStr) Document {
 	install.Common.AdvertiserId = data.AdvertiserId
 	install.Common.AgencyId = data.AgencyId
 	install.Common.CampaignId = data.CampaignId
-	install.Common.CurrencyCode = data.CountryCode
+	install.Common.CurrencyCode = data.CurrencyCode
 	install.Common.GoogleAid = data.GoogleAid
 	install.Common.IosIfa = data.IosIfa
 	install.Common.Language = data.Language
@@ -344,7 +490,7 @@ func NewOpen(data AllFieldsStr) Document {
 	open.Common.AdvertiserId = data.AdvertiserId
 	open.Common.AgencyId = data.AgencyId
 	open.Common.CampaignId = data.CampaignId
-	open.Common.CurrencyCode = data.CountryCode
+	open.Common.CurrencyCode = data.CurrencyCode
 	open.Common.GoogleAid = data.GoogleAid
 	open.Common.IosIfa = data.IosIfa
 	open.Common.Language = data.Language
@@ -383,7 +529,7 @@ func NewEvent(data AllFieldsStr) Document {
 	event.Common.AdvertiserId = data.AdvertiserId
 	event.Common.AgencyId = data.AgencyId
 	event.Common.CampaignId = data.CampaignId
-	event.Common.CurrencyCode = data.CountryCode
+	event.Common.CurrencyCode = data.CurrencyCode
 	event.Common.GoogleAid = data.GoogleAid
 	event.Common.IosIfa = data.IosIfa
 	event.Common.Language = data.Language

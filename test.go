@@ -13,7 +13,7 @@ import (
 func main() {
 	readClicks("/tmp/stat_clicks_1681.csv")
 	fmt.Println("-----------------------------------")
-	//	readInstalls("/tmp/stat_installs_1681.csv")
+	readInstalls("/tmp/stat_installs_1681.csv")
 }
 
 func IOS8601(timefield string) string {
@@ -39,7 +39,7 @@ func readClicks(path string) {
 	var jsonStringClick []string
 	var jsonStringInstall []string
 
-	url := "http://dp-joshp01-dev.sea1.office.priv:9200/realSampleData/testData"
+	url := "http://dp-joshp01-dev.sea1.office.priv:9200/database/mydata"
 	dataFieldsClicks := `"id","tracking_id","publisher_id","ad_network_id","advertiser_id","site_id","campaign_id","publisher_ref_id","device_ip","sdk","device_carrier","language","package_name","app_name","country_id","region_id","user_agent","request_url","created","modified","latitude","longitude"`
 	dataFieldsSlice := strings.Split(dataFieldsClicks, ",")
 	lengthOfDataFieldSlice := len(dataFieldsSlice)
@@ -63,10 +63,10 @@ func readClicks(path string) {
 			continue
 		}
 
-		if count > 1 {
-			count++
-			break
-		}
+		// if count > 1 {
+		// 	count++
+		// 	break
+		// }
 
 		// clear the jsonStrings
 		jsonString = jsonString[:0]
@@ -96,15 +96,23 @@ func readClicks(path string) {
 			}
 		}
 
+		// for i := 0; i < lengthOfDataFieldSlice; i++ {
+		// 	if fields[i] != "NULL" {
+		// 		continue
+		// 	} else {
+		// 		if i == 0 || i == 1 || i == 7 || i == 8 || i == 9 || i == 10 || i == 11 || i == 12 || i == 13 || i == 16 || i == 17 {
+		// 			fields[i] = "\"0\""
+		// 		} else {
+		// 			fields[i] = "0"
+		// 		}
+		// 	}
+		// }
+
 		for i := 0; i < lengthOfDataFieldSlice; i++ {
 			if fields[i] != "NULL" {
 				continue
 			} else {
-				if i == 0 || i == 1 || i == 7 || i == 8 || i == 9 || i == 10 || i == 11 || i == 12 || i == 13 || i == 16 || i == 17 {
-					fields[i] = "\"0\""
-				} else {
-					fields[i] = "0"
-				}
+				fields[i] = "null"
 			}
 		}
 
@@ -171,8 +179,8 @@ func readClicks(path string) {
 
 		jsonStringClick = addToJsonString(dataFieldsSlice[7], fields[7], jsonStringClick)
 		jsonStringClick = addToJsonString(dataFieldsSlice[8], fields[8], jsonStringClick)
-		jsonStringClick = addToJsonString(dataFieldsSlice[9], fields[9], jsonStringClick)
 
+		jsonString = addToJsonString(dataFieldsSlice[9], fields[9], jsonString)
 		jsonString = addToJsonString(dataFieldsSlice[10], fields[10], jsonString)
 		jsonString = addToJsonString(dataFieldsSlice[11], fields[11], jsonString)
 		jsonString = addToJsonString(dataFieldsSlice[12], fields[12], jsonString)
@@ -216,8 +224,8 @@ func readClicks(path string) {
 
 		finalJsonString := strings.Join(jsonString, "")
 
-		fmt.Println(finalJsonString)
-		fmt.Println("\n")
+		// fmt.Println(finalJsonString)
+		// fmt.Println("\n")
 
 		req, err := http.NewRequest("POST", url, bytes.NewBuffer([]byte(finalJsonString)))
 		if err != nil {
@@ -246,7 +254,7 @@ func readInstalls(path string) {
 	var jsonStringClick []string
 	var jsonStringInstall []string
 
-	url := "http://dp-joshp01-dev.sea1.office.priv:9200/realSampleData/testData"
+	url := "http://dp-joshp01-dev.sea1.office.priv:9200/database/mydata"
 	dataFieldsInstalls := `"id","tracking_id","stat_click_id","session_ip","session_datetime","publisher_id","ad_network_id","advertiser_id","site_id","campaign_id","site_event_id","publisher_ref_id","device_ip","sdk","device_carrier","language","package_name","app_name","country_id","region_id","user_agent","request_url","created","modified","latitude","longitude","match_type","install_date"`
 	dataFieldsSliceInstalls := strings.Split(dataFieldsInstalls, ",")
 	lengthOfDataFieldSliceInstalls := len(dataFieldsSliceInstalls)
@@ -269,9 +277,9 @@ func readInstalls(path string) {
 			count++
 			continue
 		}
-		if count > 100 {
-			break
-		}
+		// if count > 100 {
+		// 	break
+		// }
 
 		// clear the jsonString
 		jsonString = jsonString[:0]
@@ -301,15 +309,23 @@ func readInstalls(path string) {
 			}
 		}
 
-		for i := 0; i < lengthOfDataFieldSlice; i++ {
+		// for i := 0; i < lengthOfDataFieldSliceInstalls; i++ {
+		// 	if fields[i] != "NULL" {
+		// 		continue
+		// 	} else {
+		// 		if i == 5 || i == 6 || i == 7 || i == 8 || i == 9 || i == 10 || i == 18 || i == 19 || i == 24 || i == 25 {
+		// 			fields[i] = "0"
+		// 		} else {
+		// 			fields[i] = "\"0\""
+		// 		}
+		// 	}
+		// }
+
+		for i := 0; i < lengthOfDataFieldSliceInstalls; i++ {
 			if fields[i] != "NULL" {
 				continue
 			} else {
-				if i == 5 || i == 6 || i == 7 || i == 8 || i == 9 || i == 10 || i == 18 || i == 19 || i == 24 || i == 25 {
-					fields[i] = "0"
-				} else {
-					fields[i] = "\"0\""
-				}
+				fields[i] = "null"
 			}
 		}
 

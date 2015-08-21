@@ -227,43 +227,43 @@ func POST(w http.ResponseWriter, r *http.Request) {
 
 func UpdateCommonData(originDoc Document, clickData AllFieldsStr) Document {
 
-	if originDoc.Common.AdNetworkId == 0 {
+	if originDoc.Common.AdNetworkId == 0 && clickData.AdNetworkId != 0 {
 		originDoc.Common.AdNetworkId = clickData.AdNetworkId
 	}
-	if originDoc.Common.AdvertiserId == 0 {
+	if originDoc.Common.AdvertiserId == 0 && clickData.AdvertiserId != 0 {
 		originDoc.Common.AdvertiserId = clickData.AdvertiserId
 	}
-	if originDoc.Common.AgencyId == 0 {
+	if originDoc.Common.AgencyId == 0 && clickData.AgencyId != 0 {
 		originDoc.Common.AgencyId = clickData.AgencyId
 	}
-	if originDoc.Common.CampaignId == 0 {
+	if originDoc.Common.CampaignId == 0 && clickData.CampaignId != 0 {
 		originDoc.Common.CampaignId = clickData.CampaignId
 	}
-	if originDoc.Common.CurrencyCode == "" {
+	if originDoc.Common.CurrencyCode == "" && clickData.CurrencyCode != "" {
 		originDoc.Common.CurrencyCode = clickData.CurrencyCode
 	}
-	if originDoc.Common.GoogleAid == "" {
+	if originDoc.Common.GoogleAid == "" && clickData.GoogleAid != "" {
 		originDoc.Common.GoogleAid = clickData.GoogleAid
 	}
-	if originDoc.Common.IosIfa == "" {
+	if originDoc.Common.IosIfa == "" && clickData.IosIfa != "" {
 		originDoc.Common.IosIfa = clickData.IosIfa
 	}
-	if originDoc.Common.Language == "" {
+	if originDoc.Common.Language == "" && clickData.Language != "" {
 		originDoc.Common.Language = clickData.Language
 	}
-	if originDoc.Common.PackageName == "" {
+	if originDoc.Common.PackageName == "" && clickData.PackageName != "" {
 		originDoc.Common.PackageName = clickData.PackageName
 	}
-	if originDoc.Common.PublisherId == 0 {
+	if originDoc.Common.PublisherId == 0 && clickData.PublisherId != 0 {
 		originDoc.Common.PublisherId = clickData.PublisherId
 	}
-	if originDoc.Common.PublisherUserId == "" {
+	if originDoc.Common.PublisherUserId == "" && clickData.PublisherUserId != "" {
 		originDoc.Common.PublisherUserId = clickData.PublisherUserId
 	}
-	if originDoc.Common.SiteId == 0 {
+	if originDoc.Common.SiteId == 0 && clickData.SiteId != 0 {
 		originDoc.Common.SiteId = clickData.SiteId
 	}
-	if originDoc.Common.WindowsAid == "" {
+	if originDoc.Common.WindowsAid == "" && clickData.WindowsAid != "" {
 		originDoc.Common.WindowsAid = clickData.WindowsAid
 	}
 

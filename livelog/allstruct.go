@@ -11,8 +11,8 @@ type Document struct {
 	Click      ClickStr
 	Impression ImpressionStr
 	Install    InstallStr
-	Events     EventStr
-	Opens      OpenStr
+	Events     []EventStr
+	Opens      []OpenStr
 }
 
 type CommonInfoStr struct {
@@ -86,6 +86,8 @@ type OpenStr struct {
 	WurflBrandName   string
 	WurflModelName   string
 	WurflDeviceOs    string
+	Click            ClickStr
+	Impression       ImpressionStr
 }
 
 type EventStr struct {
@@ -103,6 +105,8 @@ type EventStr struct {
 	WurflBrandName   string
 	WurflModelName   string
 	WurflDeviceOs    string
+	Click            ClickStr
+	Impression       ImpressionStr
 }
 
 type AllFieldsStr struct {

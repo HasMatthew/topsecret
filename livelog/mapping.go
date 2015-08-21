@@ -1,6 +1,7 @@
 PUT /indexes
+//opens and events should be an array, i am not sure about that part
 {
-   
+  
       "mappings": {
          "types": {
             "properties": {
@@ -17,11 +18,10 @@ PUT /indexes
                         "type": "string"
                      },
                      "Id": {
-                        "type": "string",
- 			 "index": "not_analyzed"
+                        "type": "string"
                      },
                      "Location": {
-                         "type": "geo_point"
+                        "type": "string"
                      },
                      "PostalCode": {
                         "type": "long"
@@ -85,6 +85,41 @@ PUT /indexes
                },
                "Events": {
                   "properties": {
+                     "Click": {
+                        "properties": {
+                           "CountryCode": {
+                              "type": "string"
+                           },
+                           "Created": {
+                              "type": "date",
+                              "format": "dateOptionalTime"
+                           },
+                           "DeviceIp": {
+                              "type": "string"
+                           },
+                           "Id": {
+                              "type": "string"
+                           },
+                           "Location": {
+                              "type": "string"
+                           },
+                           "PostalCode": {
+                              "type": "long"
+                           },
+                           "RegionCode": {
+                              "type": "string"
+                           },
+                           "WurflBrandName": {
+                              "type": "string"
+                           },
+                           "WurflDeviceOs": {
+                              "type": "string"
+                           },
+                           "WurflModelName": {
+                              "type": "string"
+                           }
+                        }
+                     },
                      "CountryCode": {
                         "type": "string"
                      },
@@ -96,11 +131,45 @@ PUT /indexes
                         "type": "string"
                      },
                      "Id": {
-                        "type": "string",
-  "index": "not_analyzed"
+                        "type": "string"
+                     },
+                     "Impression": {
+                        "properties": {
+                           "CountryCode": {
+                              "type": "string"
+                           },
+                           "Created": {
+                              "type": "date",
+                              "format": "dateOptionalTime"
+                           },
+                           "DeviceIp": {
+                              "type": "string"
+                           },
+                           "Id": {
+                              "type": "string"
+                           },
+                           "Location": {
+                              "type": "string"
+                           },
+                           "PostalCode": {
+                              "type": "long"
+                           },
+                           "RegionCode": {
+                              "type": "string"
+                           },
+                           "WurflBrandName": {
+                              "type": "string"
+                           },
+                           "WurflDeviceOs": {
+                              "type": "string"
+                           },
+                           "WurflModelName": {
+                              "type": "string"
+                           }
+                        }
                      },
                      "Location": {
-                         "type": "geo_point"
+                        "type": "string"
                      },
                      "PostalCode": {
                         "type": "long"
@@ -109,20 +178,16 @@ PUT /indexes
                         "type": "string"
                      },
                      "StatClickId": {
-                        "type": "string",
-  "index": "not_analyzed"
+                        "type": "string"
                      },
                      "StatImpressionId": {
-                        "type": "string",
-  "index": "not_analyzed"
+                        "type": "string"
                      },
                      "StatInstallId": {
-                        "type": "string",
-  "index": "not_analyzed"
+                        "type": "string"
                      },
                      "StatOpenId": {
-                        "type": "string",
-  "index": "not_analyzed"
+                        "type": "string"
                      },
                      "WurflBrandName": {
                         "type": "string"
@@ -148,11 +213,10 @@ PUT /indexes
                         "type": "string"
                      },
                      "Id": {
-                        "type": "string",
-  "index": "not_analyzed"
+                        "type": "string"
                      },
                      "Location": {
-                         "type": "geo_point"
+                        "type": "string"
                      },
                      "PostalCode": {
                         "type": "long"
@@ -184,11 +248,10 @@ PUT /indexes
                         "type": "string"
                      },
                      "Id": {
-                        "type": "string",
-  "index": "not_analyzed"
+                        "type": "string"
                      },
                      "Location": {
-                        "type": "geo_point"
+                        "type": "string"
                      },
                      "PostalCode": {
                         "type": "long"
@@ -197,12 +260,10 @@ PUT /indexes
                         "type": "string"
                      },
                      "StatClickId": {
-                        "type": "string",
-  "index": "not_analyzed"
+                        "type": "string"
                      },
                      "StatImpressionId": {
-                        "type": "string",
-  "index": "not_analyzed"
+                        "type": "string"
                      },
                      "WurflBrandName": {
                         "type": "string"
@@ -217,6 +278,41 @@ PUT /indexes
                },
                "Opens": {
                   "properties": {
+                     "Click": {
+                        "properties": {
+                           "CountryCode": {
+                              "type": "string"
+                           },
+                           "Created": {
+                              "type": "date",
+                              "format": "dateOptionalTime"
+                           },
+                           "DeviceIp": {
+                              "type": "string"
+                           },
+                           "Id": {
+                              "type": "string"
+                           },
+                           "Location": {
+                              "type": "string"
+                           },
+                           "PostalCode": {
+                              "type": "long"
+                           },
+                           "RegionCode": {
+                              "type": "string"
+                           },
+                           "WurflBrandName": {
+                              "type": "string"
+                           },
+                           "WurflDeviceOs": {
+                              "type": "string"
+                           },
+                           "WurflModelName": {
+                              "type": "string"
+                           }
+                        }
+                     },
                      "CountryCode": {
                         "type": "string"
                      },
@@ -228,11 +324,45 @@ PUT /indexes
                         "type": "string"
                      },
                      "Id": {
-                        "type": "string",
-  "index": "not_analyzed"
+                        "type": "string"
+                     },
+                     "Impression": {
+                        "properties": {
+                           "CountryCode": {
+                              "type": "string"
+                           },
+                           "Created": {
+                              "type": "date",
+                              "format": "dateOptionalTime"
+                           },
+                           "DeviceIp": {
+                              "type": "string"
+                           },
+                           "Id": {
+                              "type": "string"
+                           },
+                           "Location": {
+                              "type": "string"
+                           },
+                           "PostalCode": {
+                              "type": "long"
+                           },
+                           "RegionCode": {
+                              "type": "string"
+                           },
+                           "WurflBrandName": {
+                              "type": "string"
+                           },
+                           "WurflDeviceOs": {
+                              "type": "string"
+                           },
+                           "WurflModelName": {
+                              "type": "string"
+                           }
+                        }
                      },
                      "Location": {
-                        "type": "geo_point"
+                        "type": "string"
                      },
                      "PostalCode": {
                         "type": "long"
@@ -241,16 +371,13 @@ PUT /indexes
                         "type": "string"
                      },
                      "StatClickId": {
-                        "type": "string",
-  "index": "not_analyzed"
+                        "type": "string"
                      },
                      "StatImpressionId": {
-                        "type": "string",
-  "index": "not_analyzed"
+                        "type": "string"
                      },
                      "StatInstallId": {
-                        "type": "string",
-  "index": "not_analyzed"
+                        "type": "string"
                      },
                      "WurflBrandName": {
                         "type": "string"

@@ -11,7 +11,6 @@ import (
 	"time"
 
 	"github.com/MobileAppTracking/measurement/lib/structured"
-	_ "github.com/go-sql-driver/mysql"
 	"github.com/gorilla/mux"
 )
 
@@ -189,10 +188,24 @@ type PostResponses struct {
 //the function which handle the post method
 //post the json data from broswer to the server and sql databases
 func POST(w http.ResponseWriter, r *http.Request) {
-	//time when do request
-	RequestStart := time.Now()
 
-	//get the raw bytes of input data
+	url := "http://dp-joshp01-dev.sea1.office.priv:9200/testDatabase/testdata"
+
+	var DocumentToInsert Document
+
+	// Create a client
+	client, err := elastic.NewClient()
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	// Create an index
+	_, err = client.CreateIndex("alldata").Do()
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	//get a raw byte[] from input data
 	bytes, errs := ioutil.ReadAll(r.Body)
 	if errs != nil {
 		errString := fmt.Sprintf("buffer overflow %s", errs)
@@ -200,7 +213,7 @@ func POST(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	//store the raw bytes to a temporary struct and log the Json invalid format
+	//store the raw byte[] to a temporary struct and varify the JSON is in the correct format
 	var temp AllFieldsStr
 	errs = json.Unmarshal(bytes, &temp)
 	if errs != nil {
@@ -210,19 +223,96 @@ func POST(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	//validate the input and log error input message
-	if point.AdvertiserID == 0 || point.SiteID == 0 {
-		errString := "your advertiserID or site ID may equals to 0"
-		response(w, errString, "", http.StatusBadRequest)
-		structured.Error("", "", errString, 0, nil)
+	// Search with a term query
+	termQuery := elastic.NewTermQuery(temp.id)
+	searchResult, err := client.Search().
+		Index("database"). // search in index "database"
+		Query(&termQuery). // specify the query
+		From(0).Size(10).  // take documents 0-9
+		Pretty(true).      // pretty print request and response JSON
+		Do()               // execute
+	if err != nil {
+		// Handle error
+		panic(err)
+	}
+
+	// Here's how you iterate through results with full control over each step.
+	if searchResult.Hits != nil {
+		fmt.Printf("Found a total of %d matches \n", searchResult.Hits.TotalHits)
+
+		// Iterate through results
+		for _, hit := range searchResult.Hits.Hits {
+			// hit.Index contains the name of the index
+
+			// Deserialize hit.Source into a Tweet (could also be just a map[string]interface{}).
+			var matchedDocument Document
+			err := json.Unmarshal(*hit.Source, &matchedDocument)
+			if err != nil {
+				fmt.Println("Deserialization failed")
+			}
+			switch temp.LogType {
+			case "impression":
+				DocumentToInsert = AddImpression(DocumentToInsert, temp)
+			case "click":
+				DocumentToInsert = AddClick(DocumentToInsert, temp)
+			case "install":
+				DocumentToInsert = AddInstall(DocumentToInsert, temp)
+			case "open":
+				DocumentToInsert = AddOpen(DocumentToInsert, temp)
+			case "event":
+				DocumentToInsert = AddEvent(DocumentToInsert, temp)
+
+			default:
+				panic("unrecognized escape character")
+			}
+		}
+	} else {
+		// No hits
+		fmt.Print("Found no matches,  inserting new data\n")
+
+		switch temp.LogType {
+		case "impression":
+			DocumentToInsert = NewImpression(temp)
+		case "click":
+			DocumentToInsert = NewClick(temp)
+		case "install":
+			DocumentToInsert = NewInstall(temp)
+		case "open":
+			DocumentToInsert = NewOpen(temp)
+		case "event":
+			DocumentToInsert = NewEvent(temp)
+
+		default:
+			panic("unrecognized escape character")
+		}
+
+	}
+
+	eventJSONstring, err := json.Marshal(DocumentToInsert)
+	if err != nil {
+		fmt.Println(err)
 		return
 	}
 
-	//sucess and log the request latency
-	response(w, "", id, http.StatusOK)
-	structured.Info(point.ID, point.Type, "Post successful!", point.SiteID,
-		structured.ExtraFields{structured.RequestLatency: time.Since(RequestStart),
-			structured.QueryLatency: time.Since(QueryStart)})
+	//	fmt.Println(string(eventJSONstring))
+
+	req, err := http.NewRequest("POST", url, bytes.NewBuffer(eventJSONstring))
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	//temp, _ := ioutil.ReadAll(resp.Body)
+
+	//	fmt.Println(string(temp))
+
+	resp.Body.Close()
+
 }
 
 func UpdateCommonData(originDoc Document, clickData AllFieldsStr) Document {
@@ -366,6 +456,25 @@ func AddOpen(originDoc Document, clickData AllFieldsStr) {
 	originDoc.Opens.WurflBrandName = clickData.WurflBrandName
 	originDoc.Opens.WurflDeviceOs = clickData.WurflDeviceOs
 	originDoc.Opens.WurflModelName = clickData.WurflModelName
+
+	return originDoc
+}
+
+func AddEvent(originDoc Document, eventData AllFieldsStr) Document {
+
+	originDoc.Events.CountryCode = eventData.CountryCode
+	originDoc.Events.Created = eventData.Created
+	originDoc.Events.DeviceIp = eventData.DeviceIp
+	originDoc.Events.Id = eventData.Id
+	originDoc.Events.Location = location
+	originDoc.Events.PostalCode = eventData.PostalCode
+	originDoc.Events.RegionCode = eventData.RegionCode
+	originDoc.Events.StatImpressionId = eventData.StatImpressionId
+	originDoc.Events.StatClickId = eventData.StatClickId
+	originDoc.Events.StatInstallId = eventData.StatInstallId
+	originDoc.Events.WurflBrandName = eventData.WurflBrandName
+	originDoc.Events.WurflDeviceOs = eventData.WurflDeviceOs
+	originDoc.Events.WurflModelName = eventData.WurflModelName
 
 	return originDoc
 }

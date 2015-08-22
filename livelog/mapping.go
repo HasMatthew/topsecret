@@ -3,9 +3,11 @@ PUT /indexes
 {
   
       "mappings": {
-         "types": {
-            "properties": {
+       
                "Click": {
+                  "_parent": {
+               "type": "Common"
+            },
                   "properties": {
                      "CountryCode": {
                         "type": "string"
@@ -18,10 +20,11 @@ PUT /indexes
                         "type": "string"
                      },
                      "Id": {
-                        "type": "string"
+                        "type": "string",
+                         "index": "not_analyzed"
                      },
                      "Location": {
-                        "type": "string"
+                         "type": "geo_point"
                      },
                      "PostalCode": {
                         "type": "long"
@@ -84,6 +87,9 @@ PUT /indexes
                   }
                },
                "Events": {
+                  "_parent": {
+               "type": "Common"
+            },
                   "properties": {
                      "Click": {
                         "properties": {
@@ -98,10 +104,11 @@ PUT /indexes
                               "type": "string"
                            },
                            "Id": {
-                              "type": "string"
+                              "type": "string",
+                               "index": "not_analyzed"
                            },
                            "Location": {
-                              "type": "string"
+                              "type": "geo_point"
                            },
                            "PostalCode": {
                               "type": "long"
@@ -131,7 +138,8 @@ PUT /indexes
                         "type": "string"
                      },
                      "Id": {
-                        "type": "string"
+                        "type": "string",
+                         "index": "not_analyzed"
                      },
                      "Impression": {
                         "properties": {
@@ -146,10 +154,11 @@ PUT /indexes
                               "type": "string"
                            },
                            "Id": {
-                              "type": "string"
+                              "type": "string",
+                               "index": "not_analyzed"
                            },
                            "Location": {
-                              "type": "string"
+                               "type": "geo_point"
                            },
                            "PostalCode": {
                               "type": "long"
@@ -169,7 +178,7 @@ PUT /indexes
                         }
                      },
                      "Location": {
-                        "type": "string"
+                        "type": "geo_point"
                      },
                      "PostalCode": {
                         "type": "long"
@@ -178,16 +187,20 @@ PUT /indexes
                         "type": "string"
                      },
                      "StatClickId": {
-                        "type": "string"
+                        "type": "string",
+                         "index": "not_analyzed"
                      },
                      "StatImpressionId": {
-                        "type": "string"
+                        "type": "string",
+                         "index": "not_analyzed"
                      },
                      "StatInstallId": {
-                        "type": "string"
+                        "type": "string",
+                         "index": "not_analyzed"
                      },
                      "StatOpenId": {
-                        "type": "string"
+                        "type": "string",
+                         "index": "not_analyzed"
                      },
                      "WurflBrandName": {
                         "type": "string"
@@ -201,6 +214,9 @@ PUT /indexes
                   }
                },
                "Impression": {
+                  "_parent": {
+               "type": "Common"
+            },
                   "properties": {
                      "CountryCode": {
                         "type": "string"
@@ -213,10 +229,11 @@ PUT /indexes
                         "type": "string"
                      },
                      "Id": {
-                        "type": "string"
+                        "type": "string",
+                         "index": "not_analyzed"
                      },
                      "Location": {
-                        "type": "string"
+                         "type": "geo_point"
                      },
                      "PostalCode": {
                         "type": "long"
@@ -236,6 +253,9 @@ PUT /indexes
                   }
                },
                "Install": {
+                  "_parent": {
+               "type": "Common"
+            },
                   "properties": {
                      "CountryCode": {
                         "type": "string"
@@ -248,10 +268,11 @@ PUT /indexes
                         "type": "string"
                      },
                      "Id": {
-                        "type": "string"
+                        "type": "string",
+                         "index": "not_analyzed"
                      },
                      "Location": {
-                        "type": "string"
+                        "type": "geo_point"
                      },
                      "PostalCode": {
                         "type": "long"
@@ -260,10 +281,12 @@ PUT /indexes
                         "type": "string"
                      },
                      "StatClickId": {
-                        "type": "string"
+                        "type": "string",
+                         "index": "not_analyzed"
                      },
                      "StatImpressionId": {
-                        "type": "string"
+                        "type": "string",
+                         "index": "not_analyzed"
                      },
                      "WurflBrandName": {
                         "type": "string"
@@ -277,6 +300,9 @@ PUT /indexes
                   }
                },
                "Opens": {
+                  "_parent": {
+               "type": "Common"
+            },
                   "properties": {
                      "Click": {
                         "properties": {
@@ -291,10 +317,11 @@ PUT /indexes
                               "type": "string"
                            },
                            "Id": {
-                              "type": "string"
+                              "type": "string",
+                               "index": "not_analyzed"
                            },
                            "Location": {
-                              "type": "string"
+                               "type": "geo_point"
                            },
                            "PostalCode": {
                               "type": "long"
@@ -324,7 +351,8 @@ PUT /indexes
                         "type": "string"
                      },
                      "Id": {
-                        "type": "string"
+                        "type": "string",
+                         "index": "not_analyzed"
                      },
                      "Impression": {
                         "properties": {
@@ -339,10 +367,11 @@ PUT /indexes
                               "type": "string"
                            },
                            "Id": {
-                              "type": "string"
+                              "type": "string",
+                               "index": "not_analyzed"
                            },
                            "Location": {
-                              "type": "string"
+                               "type": "geo_point"
                            },
                            "PostalCode": {
                               "type": "long"
@@ -362,7 +391,7 @@ PUT /indexes
                         }
                      },
                      "Location": {
-                        "type": "string"
+                        "type": "geo_point"
                      },
                      "PostalCode": {
                         "type": "long"
@@ -371,13 +400,16 @@ PUT /indexes
                         "type": "string"
                      },
                      "StatClickId": {
-                        "type": "string"
+                        "type": "string",
+                         "index": "not_analyzed"
                      },
                      "StatImpressionId": {
-                        "type": "string"
+                        "type": "string",
+                         "index": "not_analyzed"
                      },
                      "StatInstallId": {
-                        "type": "string"
+                        "type": "string",
+                         "index": "not_analyzed"
                      },
                      "WurflBrandName": {
                         "type": "string"
@@ -392,6 +424,6 @@ PUT /indexes
                }
             }
          }
-      }
+      
    
 }

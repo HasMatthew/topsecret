@@ -83,10 +83,26 @@ PUT /indexes
                      },
                      "WindowsAid": {
                         "type": "string"
+                     },
+                     "StatInstallId" :{
+                        "type" : "string",
+                        "index": "not_analyzed"
+                     },
+                     "ClickInstallId":{
+                        "type" : "string",
+                        "index": "not_analyzed"
+                     },
+                     "ImpressionInstallId":{
+                        "type" : "string",
+                        "index": "not_analyzed"
+                     },
+                     "TempEventID":{
+                        "type" : "string",
+                        "index": "not_analyzed"
                      }
                   }
                },
-               "Events": {
+               "Event": {
                   "_parent": {
                "type": "Common"
             },
@@ -299,7 +315,7 @@ PUT /indexes
                      }
                   }
                },
-               "Opens": {
+               "Open": {
                   "_parent": {
                "type": "Common"
             },

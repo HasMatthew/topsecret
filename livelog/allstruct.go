@@ -1,21 +1,8 @@
 package main
 
-import (
-	"encoding/json"
-	"fmt"
-	"time"
-)
+import "time"
 
-type Document struct {
-	Common     CommonInfoStr
-	Click      ClickStr
-	Impression ImpressionStr
-	Install    InstallStr
-	Events     []EventStr
-	Opens      []OpenStr
-}
-
-type CommonInfoStr struct {
+type Common struct {
 	GoogleAid       string
 	WindowsAid      string
 	IosIfa          string
@@ -29,9 +16,11 @@ type CommonInfoStr struct {
 	AgencyId        int64
 	CampaignId      int64
 	PublisherUserId string
+	StatInstallId   string // the install related to all events /open/clicks
+	ClickInstallId  string //The click id related to that install
 }
 
-type ImpressionStr struct {
+type Impression struct {
 	Id             string
 	Created        time.Time
 	DeviceIp       string
@@ -44,7 +33,7 @@ type ImpressionStr struct {
 	WurflDeviceOs  string
 }
 
-type ClickStr struct {
+type Click struct {
 	Id             string
 	Created        time.Time
 	DeviceIp       string
@@ -57,7 +46,7 @@ type ClickStr struct {
 	WurflDeviceOs  string
 }
 
-type InstallStr struct {
+type Install struct {
 	Id               string
 	Created          time.Time
 	DeviceIp         string
@@ -72,7 +61,7 @@ type InstallStr struct {
 	WurflDeviceOs    string
 }
 
-type OpenStr struct {
+type Open struct {
 	Id               string
 	Created          time.Time
 	DeviceIp         string
@@ -90,7 +79,7 @@ type OpenStr struct {
 	Impression       ImpressionStr
 }
 
-type EventStr struct {
+type Event struct {
 	Id               string
 	Created          time.Time
 	DeviceIp         string
@@ -109,7 +98,7 @@ type EventStr struct {
 	Impression       ImpressionStr
 }
 
-type AllFieldsStr struct {
+type AllFields struct {
 	LogType          string
 	Id               string
 	Created          time.Time
@@ -141,8 +130,44 @@ type AllFieldsStr struct {
 	Longitude        float64
 }
 
-func main() {
-	var m Document
-	bytes, _ := json.Marshal(&m)
-	fmt.Println(string(bytes))
-}
+//code trash :
+
+// 	//***********************special case: if event happen beofre both click/install, well actually it is rare***********************//
+// 	//find related impression or click from inner struct of open/events, put the click back to outside,
+// 	//I decide not to put all related events and opens back to this install because it is really rare and instead, I would put ttl
+// 	//on both parent and children of events /opens if they are post alone
+
+// 	QueryOne := elastic.NewTermQuery("Click.Id", installUni.StatClickId)
+// 	QueryTwo := elastic.NewTermQuery("Impression.Id", installUni.StatImpressionId)
+// 	searchEvents, _ := client.Search().Index("alls").Type("Event").Query(&QueryOne).From(0).Size(1).Do()
+// 	if searchEvents.TotalHits() == 0 {
+// 		searchEvents, _ = client.Search().Index("alls").Type("Event").Query(&QueryTwo).From(0).Size(1).Do()
+// 		if searchEvents.TotalHits() == 0 {
+
+// 		} else {
+// 			hit := searchEvents.Hits.Hits[0]
+// 			var event Event
+// 			json.Unmarshal(*hit.Source, &event)
+// 			impression:= event.Impression
+// 			//update the click id inside of common one
+// 			var update UpdateImpression
+// 			update.Impression = impression.Id
+// 			client.Update().Index("alls").Type("Common").Id(parentId).Doc(update).Do()
+// 			//get the click struct out from event to install
+// 			client.Index().Index("alls").Type("Click").Parent(parentId).BodyJson(click).Do()
+// 		}
+// 	} else {
+// 		hit := searchEvents.Hits.Hits[0]
+// 		var event Event
+// 		json.Unmarshal(*hit.Source, &event)
+// 		click := event.Click
+// 		//update the click id inside of common one
+// 		var update UpdateClickId
+// 		update.ClickInstallId = click.Id
+// 		client.Update().Index("alls").Type("Common").Id(parentId).Doc(update).Do()
+// 		//get the click struct out from event to install
+// 		client.Index().Index("alls").Type("Click").Parent(parentId).BodyJson(click).Do()
+
+// 	}
+
+// }

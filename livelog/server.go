@@ -96,20 +96,20 @@ func POST(w http.ResponseWriter, r *http.Request) {
 
 func click(allFields AllFields) {
 	//set up unqiue fields first
-	var clickUni Click
-	clickUni.Id = allFields.Id
-	clickUni.Created = allFields.Created
-	clickUni.DeviceIp = allFields.DeviceIp
-	clickUni.CountryCode = allFields.CountryCode
-	clickUni.RegionCode = allFields.RegionCode
-	clickUni.PostalCode = allFields.PostalCode
-	clickUni.Location = strconv.FormatFloat(allFields.Latitude, 'E', -1, 64) + "," + strconv.FormatFloat(allFields.Longitude, 'E', -1, 64)
-	clickUni.WurflBrandName = allFields.WurflBrandName
-	clickUni.WurflModelName = allFields.WurflModelName
-	clickUni.WurflDeviceOs = allFields.WurflDeviceOs
+	var uniFields Click /////
+	uniFields.Id = allFields.Id
+	uniFields.Created = allFields.Created
+	uniFields.DeviceIp = allFields.DeviceIp
+	uniFields.CountryCode = allFields.CountryCode
+	uniFields.RegionCode = allFields.RegionCode
+	uniFields.PostalCode = allFields.PostalCode
+	uniFields.Location = strconv.FormatFloat(allFields.Latitude, 'E', -1, 64) + "," + strconv.FormatFloat(allFields.Longitude, 'E', -1, 64)
+	uniFields.WurflBrandName = allFields.WurflBrandName
+	uniFields.WurflModelName = allFields.WurflModelName
+	uniFields.WurflDeviceOs = allFields.WurflDeviceOs
 
 	//search for realationship with install first ******click id aleays exist
-	termQuery := elastic.NewTermQuery("ClickInstallId", clickUni.Id)
+	termQuery := elastic.NewTermQuery("ClickInstallId", uniFields.Id) ///
 	searchResult, _ := client.Search().Index("alls").Type("Common").Query(&termQuery).Pretty(true).Do()
 
 	//******************** find the only install
@@ -120,72 +120,160 @@ func click(allFields AllFields) {
 		parentId := firstHit.Id
 
 		//update the parent doc's clickInstallId -----the click id which realted to that install
-		var clickID UpdateClickId
-		clickID.ClickInstallId = clickUni.Id
-		client.Update().Index("alls").Type("Common").Id(parentId).Doc(clickID).Do()
+		var clickID UpdateClickId                                                   ///////
+		clickID.ClickInstallId = uniFields.Id                                       /////////
+		client.Update().Index("alls").Type("Common").Id(parentId).Doc(clickID).Do() ////////
 
 		//index the click doc as child doc to this parent id
-		client.Index().Index("alls").Type("Click").Parent(parentId).BodyJson(clickUni).Do()
+		client.Index().Index("alls").Type("Click").Parent(parentId).BodyJson(uniFields).Do() ///////
 
 	} else if searchResult.TotalHits() == 0 {
 		//************find no install--- find the event and open first *****click id always exists
 
-		termQuery = elastic.NewTermQuery("StatClickId", clickUni.Id)
+		termQuery = elastic.NewTermQuery("StatClickId", "3333") ////
 
 		//update the events to have reengaement  click struct
 		searchEvent, _ := client.Search().Index("alls").Type("Event").Query(&termQuery).Pretty(true).Do()
+
+		fmt.Println("this is searching for ecent:", searchResult.TotalHits(), uniFields.Id)
+
 		for _, hit := range searchEvent.Hits.Hits {
-			var updateclick UpdateClick
-			updateclick.Click = clickUni
-			docId := hit.Id
-			client.Update().Index("alls").Type("Event").Id(docId).Doc(updateclick).Do()
+			var update UpdateClick                                                 ////
+			update.Click = uniFields                                               ////
+			docId := hit.Id                                                        ////
+			client.Update().Index("alls").Type("Event").Id(docId).Doc(update).Do() ////
 
 		}
 
 		//update the opens to have this reengaement click
 		searchOpen, _ := client.Search().Index("alls").Type("Open").Query(&termQuery).Pretty(true).Do()
 		for _, hit := range searchOpen.Hits.Hits {
-			var updateclick UpdateClick
-			updateclick.Click = clickUni
-			docId := hit.Id
-			client.Update().Index("alls").Type("Open").Id(docId).Doc(updateclick).Do()
+			var update UpdateClick                                                ///
+			update.Click = uniFields                                              ///
+			docId := hit.Id                                                       ///
+			client.Update().Index("alls").Type("Open").Id(docId).Doc(update).Do() ///
 		}
 
 		//************if there is no install and no matter whether it found a event/open, post the click
 
 		//post the parent first
-		var parent Common
-		parent.GoogleAid = allFields.GoogleAid
-		parent.WindowsAid = allFields.WindowsAid
-		parent.IosIfa = allFields.IosIfa
-		parent.Language = allFields.Language
-		parent.CurrencyCode = allFields.CurrencyCode
-		parent.SiteId = allFields.SiteId
-		parent.AdvertiserId = allFields.AdvertiserId
-		parent.PackageName = allFields.PackageName
-		parent.PublisherId = allFields.PublisherId
-		parent.AdNetworkId = allFields.AdNetworkId
-		parent.AgencyId = allFields.AgencyId
-		parent.CampaignId = allFields.CampaignId
-		parent.PublisherUserId = allFields.PublisherUserId
+		var common Common
+		common.GoogleAid = allFields.GoogleAid
+		common.WindowsAid = allFields.WindowsAid
+		common.IosIfa = allFields.IosIfa
+		common.Language = allFields.Language
+		common.CurrencyCode = allFields.CurrencyCode
+		common.SiteId = allFields.SiteId
+		common.AdvertiserId = allFields.AdvertiserId
+		common.PackageName = allFields.PackageName
+		common.PublisherId = allFields.PublisherId
+		common.AdNetworkId = allFields.AdNetworkId
+		common.AgencyId = allFields.AgencyId
+		common.CampaignId = allFields.CampaignId
+		common.PublisherUserId = allFields.PublisherUserId
 		//the click id which future install  may contributed to
-		parent.ClickInstallId = clickUni.Id
+		common.ClickInstallId = uniFields.Id /////
 
 		//index the parent common field first
-		indexParent, _ := client.Index().Index("alls").Type("Common").BodyJson(parent).Do()
+		indexParent, _ := client.Index().Index("alls").Type("Common").BodyJson(common).Do()
 		parentId := indexParent.Id
 		//index the click as the children
-		client.Index().Index("alls").Type("Click").Parent(parentId).BodyJson(clickUni).Do()
+		client.Index().Index("alls").Type("Click").Parent(parentId).BodyJson(uniFields).Do() /////
 
 	} else {
 		//*************find multiple install related to this click
-		structured.Warn(clickUni.Id, "Click", "the click has multiple install contributed to it ", int(allFields.SiteId), nil)
+		structured.Warn(uniFields.Id, "Click", "the click has multiple install contributed to it ", int(allFields.SiteId), nil) /////
 	}
 
 }
 
 func impression(allFields AllFields) {
+	//set up unqiue fields first
+	var uniFields Impression
+	uniFields.Id = allFields.Id
+	uniFields.Created = allFields.Created
+	uniFields.DeviceIp = allFields.DeviceIp
+	uniFields.CountryCode = allFields.CountryCode
+	uniFields.RegionCode = allFields.RegionCode
+	uniFields.PostalCode = allFields.PostalCode
+	uniFields.Location = strconv.FormatFloat(allFields.Latitude, 'E', -1, 64) + "," + strconv.FormatFloat(allFields.Longitude, 'E', -1, 64)
+	uniFields.WurflBrandName = allFields.WurflBrandName
+	uniFields.WurflModelName = allFields.WurflModelName
+	uniFields.WurflDeviceOs = allFields.WurflDeviceOs
 
+	//search for realationship with install first ******impression id aleays exist
+	termQuery := elastic.NewTermQuery("ImpressionInstallId", uniFields.Id)
+	searchResult, _ := client.Search().Index("alls").Type("Common").Query(&termQuery).Pretty(true).Do()
+
+	//******************** find the only install
+	if searchResult.TotalHits() == 1 {
+		hits := searchResult.Hits.Hits
+
+		firstHit := hits[0]
+		parentId := firstHit.Id
+
+		//update the parent doc's clickImpressionId -----the impression id which realted to that install
+		var clickID UpdateImpressionId
+		clickID.ImpressionInstallId = uniFields.Id
+		client.Update().Index("alls").Type("Common").Id(parentId).Doc(clickID).Do()
+
+		//index the impression doc as child doc to this parent id
+		client.Index().Index("alls").Type("Impression").Parent(parentId).BodyJson(uniFields).Do()
+
+	} else if searchResult.TotalHits() == 0 {
+		//************find no install--- find the event and open first *****impression id always exists
+
+		termQuery = elastic.NewTermQuery("StatImpression", uniFields.Id)
+
+		//update the events to have reengaement impression struct
+		searchEvent, _ := client.Search().Index("alls").Type("Event").Query(&termQuery).Pretty(true).Do()
+		for _, hit := range searchEvent.Hits.Hits {
+			var update UpdateImpression
+			update.Impression = uniFields
+			docId := hit.Id
+			client.Update().Index("alls").Type("Event").Id(docId).Doc(update).Do()
+
+		}
+
+		//update the opens to have this reengaement click
+		searchOpen, _ := client.Search().Index("alls").Type("Open").Query(&termQuery).Pretty(true).Do()
+		for _, hit := range searchOpen.Hits.Hits {
+			var update UpdateImpression
+			update.Impression = uniFields
+			docId := hit.Id
+			client.Update().Index("alls").Type("Open").Id(docId).Doc(update).Do()
+		}
+
+		//************if there is no install and no matter whether it found a event/open, post the impression
+
+		//post the parent first
+		var common Common
+		common.GoogleAid = allFields.GoogleAid
+		common.WindowsAid = allFields.WindowsAid
+		common.IosIfa = allFields.IosIfa
+		common.Language = allFields.Language
+		common.CurrencyCode = allFields.CurrencyCode
+		common.SiteId = allFields.SiteId
+		common.AdvertiserId = allFields.AdvertiserId
+		common.PackageName = allFields.PackageName
+		common.PublisherId = allFields.PublisherId
+		common.AdNetworkId = allFields.AdNetworkId
+		common.AgencyId = allFields.AgencyId
+		common.CampaignId = allFields.CampaignId
+		common.PublisherUserId = allFields.PublisherUserId
+		//the impression id which future install  may contributed to
+		common.ImpressionInstallId = uniFields.Id
+
+		//index the parent common field first
+		indexParent, _ := client.Index().Index("alls").Type("Common").BodyJson(common).Do()
+		parentId := indexParent.Id
+		//index the click as the children
+		client.Index().Index("alls").Type("Impression").Parent(parentId).BodyJson(uniFields).Do() /////
+
+	} else {
+		//*************find multiple install related to this click
+		structured.Warn(uniFields.Id, "Impression", "the impression has multiple install contributed to it ", int(allFields.SiteId), nil) /////
+	}
 }
 
 //click/impression----X---alone
@@ -293,14 +381,13 @@ func install(allFields AllFields) {
 }
 
 func event(allFields AllFields) {
-	var event Event
+	var event Event ////////
 	event.Id = allFields.Id
 	event.Created = allFields.Created
 	event.DeviceIp = allFields.DeviceIp
 	event.StatImpressionId = allFields.StatImpressionId
 	event.StatClickId = allFields.StatClickId
 	event.StatInstallId = allFields.StatInstallId
-	event.StatOpenId = allFields.StatOpenId
 	event.CountryCode = allFields.CountryCode
 	event.RegionCode = allFields.RegionCode
 	event.PostalCode = allFields.PostalCode
@@ -341,10 +428,10 @@ func event(allFields AllFields) {
 						event.Click = found
 
 						//put the event as a child
-						client.Index().Index("alls").Type("Event").Parent(parentId).BodyJson(event).Do()
+						client.Index().Index("alls").Type("Event").Parent(parentId).BodyJson(event).Do() /////////
 
 					} else {
-						structured.Warn(event.Id, "Event", "this event has multiple clicks related to it ", int(allFields.SiteId), nil)
+						structured.Warn(event.Id, "Event", "this event has multiple clicks related to it ", int(allFields.SiteId), nil) /////////
 					}
 				}
 
@@ -363,10 +450,10 @@ func event(allFields AllFields) {
 						event.Impression = found
 
 						//put the event as a child
-						client.Index().Index("alls").Type("Event").Parent(parentId).BodyJson(event).Do()
+						client.Index().Index("alls").Type("Event").Parent(parentId).BodyJson(event).Do() ////////
 
 					} else {
-						structured.Warn(event.Id, "Event", "this event has multiple impression related to it ", int(allFields.SiteId), nil)
+						structured.Warn(event.Id, "Event", "this event has multiple impression related to it ", int(allFields.SiteId), nil) ///////
 					}
 				}
 
@@ -374,11 +461,11 @@ func event(allFields AllFields) {
 
 			if nohitClickImp {
 				//if the event no related with any click or impresssion
-				client.Index().Index("alls").Type("Event").Parent(parentId).BodyJson(event).Do()
+				client.Index().Index("alls").Type("Event").Parent(parentId).BodyJson(event).Do() ////////////
 			}
 
 		} else if searchResult.TotalHits() > 1 {
-			structured.Warn(event.Id, "event", "has multiple event contributed to that", int(allFields.SiteId), nil)
+			structured.Warn(event.Id, "event", "has multiple event contributed to that", int(allFields.SiteId), nil) //////////
 		}
 
 		//else is no hit with current install leave nohit to be true
@@ -404,7 +491,7 @@ func event(allFields AllFields) {
 		indexParent, _ := client.Index().Index("alls").Type("Common").BodyJson(common).Do()
 		parentId := indexParent.Id
 
-		client.Index().Index("alls").Type("Event").Parent(parentId).BodyJson(event).Do()
+		client.Index().Index("alls").Type("Event").Parent(parentId).BodyJson(event).Do() ///////////
 	}
 
 }
@@ -524,7 +611,6 @@ type Event struct {
 	StatImpressionId string
 	StatClickId      string
 	StatInstallId    string
-	StatOpenId       string
 	CountryCode      string
 	RegionCode       string
 	PostalCode       int32
@@ -547,7 +633,6 @@ type AllFields struct {
 	IosIfa           string  `json:"ios_ifa"`
 	Language         string  `json:"language"`
 	StatInstallId    string  `json:"stat_install_id"`
-	StatOpenId       string  `json:"stat_open_id`
 	StatClickId      string  `json:"stat_click_id"`
 	StatImpressionId string  `json:"stat_impression_id"`
 	CurrencyCode     string  `json:"currency_code"`

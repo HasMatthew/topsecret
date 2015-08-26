@@ -214,10 +214,6 @@ PUT /indexes
                         "type": "string",
                          "index": "not_analyzed"
                      },
-                     "StatOpenId": {
-                        "type": "string",
-                         "index": "not_analyzed"
-                     },
                      "WurflBrandName": {
                         "type": "string"
                      },

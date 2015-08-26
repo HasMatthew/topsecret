@@ -1,7 +1,5 @@
 //NOTE:
-//1. created can't be parsed by the input in fyfaka log
-//2. clicks inside of the event sturct can be a children of evenst instead of a nestedt obehct
-//3. always assume event happen before the click
+// assume event happen after the install, if before the install, leave it in ES with no relationship
 
 package main
 
@@ -80,10 +78,8 @@ func POST(w http.ResponseWriter, r *http.Request) {
 	//find the log type
 	logType := allFields.LogType
 
-	//fmt.Println(allFields)
-
 	if logType == "impress" {
-		//impression(allFields)
+		impression(allFields)
 	} else if logType == "click" {
 		click(allFields)
 	} else if logType == "install" {
@@ -91,7 +87,7 @@ func POST(w http.ResponseWriter, r *http.Request) {
 	} else if logType == "event" {
 		event(allFields)
 	} else if logType == "open" {
-		//open(allFields)
+		open(allFields)
 	}
 
 }
@@ -185,6 +181,10 @@ func click(allFields AllFields) {
 		//*************find multiple install related to this click
 		structured.Warn(clickUni.Id, "Click", "the click has multiple install contributed to it ", int(allFields.SiteId), nil)
 	}
+
+}
+
+func impression(allFields AllFields) {
 
 }
 
@@ -409,6 +409,10 @@ func event(allFields AllFields) {
 
 }
 
+func open(allFileds AllFields) {
+
+}
+
 //for update the click inside the events/opens
 type UpdateClick struct {
 	Click Click
@@ -536,31 +540,31 @@ type AllFields struct {
 	LogType          string `json:"log_type"`
 	Id               string `json:"id"`
 	Created          time.Time
-	TempTime         string `json:"created"`
-	DeviceIp         string `json:"device_ip"`
-	GoogleAid        string
-	WindowsAid       string
-	IosIfa           string
-	Language         string
-	StatInstallId    string `json:"stat_install_id"`
-	StatOpenId       string `json:"stat_open_id`
-	StatClickId      string `json:"stat_click_id"`
-	StatImpressionId string `json:"stat_impression_id"`
-	CurrencyCode     string
-	SiteId           int64
-	AdvertiserId     int64
-	PackageName      string
-	PublisherId      int64
-	AdNetworkId      int64
-	AgencyId         int64
-	CampaignId       int64
-	CountryCode      string
-	RegionCode       string
-	PostalCode       int32
-	WurflBrandName   string
-	WurflModelName   string
-	WurflDeviceOs    string
-	PublisherUserId  string
-	Latitude         float64
-	Longitude        float64
+	TempTime         string  `json:"created"`
+	DeviceIp         string  `json:"device_ip"`
+	GoogleAid        string  `json:"google_aid"`
+	WindowsAid       string  `json:"windows_aid"`
+	IosIfa           string  `json:"ios_ifa"`
+	Language         string  `json:"language"`
+	StatInstallId    string  `json:"stat_install_id"`
+	StatOpenId       string  `json:"stat_open_id`
+	StatClickId      string  `json:"stat_click_id"`
+	StatImpressionId string  `json:"stat_impression_id"`
+	CurrencyCode     string  `json:"currency_code"`
+	SiteId           int64   `json:"site_id"`
+	AdvertiserId     int64   `json:"advertiser_id"`
+	PackageName      string  `json:"package_name"`
+	PublisherId      int64   `json:"publisher_id"`
+	AdNetworkId      int64   `json:"ad_network_id"`
+	AgencyId         int64   `json:"agency_id"`
+	CampaignId       int64   `json:"campaign_id"`
+	CountryCode      string  `json:"country_code"`
+	RegionCode       string  `json:"region_code"`
+	PostalCode       int32   `json:"postal_code"`
+	WurflBrandName   string  `json:"wurfl_brand_name"`
+	WurflModelName   string  `json:"wurfl_model_name"`
+	WurflDeviceOs    string  `json:"wurfl_device_os"`
+	PublisherUserId  string  `json:"publisher_user_id"`
+	Latitude         float64 `json:"latitude"`
+	Longitude        float64 `json:"longitude"`
 }

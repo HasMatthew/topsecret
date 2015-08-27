@@ -1,0 +1,17 @@
+GET /alldata/_search
+{
+  "query": {
+      "filtered": {
+        
+         "filter": {
+             "script": {
+                "script": "doc['Installs.Stat_click_id'].value ==doc['Clicks.Id'].value"
+             }
+         }
+      }
+  }
+
+}
+
+also change the file inside the /etc/elasticsearch elasticsearch.yml to add a line "script.disable_dynamic: false" at the 
+end of file

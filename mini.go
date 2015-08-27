@@ -15,6 +15,7 @@ import (
 	"time"
 
 	"github.com/MobileAppTracking/measurement/lib/structured"
+
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/gorilla/mux"
 )
@@ -25,8 +26,8 @@ var (
 
 func init() {
 
-	structured.AddHookToSyslog("tcp", "localhost:10514", syslog.LOG_EMERG, "mini---project")
-	structured.AddHookToElasticsearch("localhost", "9200", "clients", "user", "")
+	structured.AddHookToSyslog("tcp", "localhost:10514", syslog.LOG_EMERG, "log messages ")
+	structured.AddHookToElasticsearch("localhost", "9200", "clients", "ids", "")
 
 	var err error
 

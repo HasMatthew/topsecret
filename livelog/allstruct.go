@@ -1,23 +1,48 @@
-package main
-
+//for update the click inside the events/opens
 import "time"
 
+type UpdateClick struct {
+	Click Click
+}
+
+//for update the impression inside the events/opens
+type UpdateImpression struct {
+	Impression Impression
+}
+
+//for update the install id inside the common parent fileds
+type UpdateInstallId struct {
+	StatInstallId string
+}
+
+//for update the click_id inside the common parent fileds
+type UpdateClickId struct {
+	ClickInstallId string
+}
+
+//for update the impression_id inside the common parent fileds
+type UpdateImpressionId struct {
+	ImpressionInstallId string
+}
+
 type Common struct {
-	GoogleAid       string
-	WindowsAid      string
-	IosIfa          string
-	Language        string
-	CurrencyCode    string
-	SiteId          int64
-	AdvertiserId    int64
-	PackageName     string
-	PublisherId     int64
-	AdNetworkId     int64
-	AgencyId        int64
-	CampaignId      int64
-	PublisherUserId string
-	StatInstallId   string // the install related to all events /open/clicks
-	ClickInstallId  string //The click id related to that install
+	GoogleAid           string
+	WindowsAid          string
+	IosIfa              string
+	Language            string
+	CurrencyCode        string
+	SiteId              int64
+	AdvertiserId        int64
+	PackageName         string
+	PublisherId         int64
+	AdNetworkId         int64
+	AgencyId            int64
+	CampaignId          int64
+	PublisherUserId     string
+	StatInstallId       string // the install related to all events /open/clicks
+	ClickInstallId      string //The click id related to that install
+	ImpressionInstallId string //The impression id related to that install
+	TempEventID         string
 }
 
 type Impression struct {
@@ -61,7 +86,7 @@ type Install struct {
 	WurflDeviceOs    string
 }
 
-type Open struct {
+type Acticity struct {
 	Id               string
 	Created          time.Time
 	DeviceIp         string
@@ -75,99 +100,39 @@ type Open struct {
 	WurflBrandName   string
 	WurflModelName   string
 	WurflDeviceOs    string
-	Click            ClickStr
-	Impression       ImpressionStr
-}
-
-type Event struct {
-	Id               string
-	Created          time.Time
-	DeviceIp         string
-	StatImpressionId string
-	StatClickId      string
-	StatInstallId    string
-	StatOpenId       string
-	CountryCode      string
-	RegionCode       string
-	PostalCode       int32
-	Location         string
-	WurflBrandName   string
-	WurflModelName   string
-	WurflDeviceOs    string
-	Click            ClickStr
-	Impression       ImpressionStr
+	ParentId         string
+	Click            Click
+	Impression       Impression
 }
 
 type AllFields struct {
-	LogType          string
-	Id               string
+	LogType          string `json:"log_type"`
+	Id               string `json:"id"`
 	Created          time.Time
-	DeviceIp         string
-	GoogleAid        string
-	WindowsAid       string
-	IosIfa           string
-	Language         string
-	StatInstallId    string
-	StatOpenId       string
-	StatClickId      string
-	StatImpressionId string
-	CurrencyCode     string
-	SiteId           int64
-	AdvertiserId     int64
-	PackageName      string
-	PublisherId      int64
-	AdNetworkId      int64
-	AgencyId         int64
-	CampaignId       int64
-	CountryCode      string
-	RegionCode       string
-	PostalCode       int32
-	WurflBrandName   string
-	WurflModelName   string
-	WurflDeviceOs    string
-	PublisherUserId  string
-	Latitude         float64
-	Longitude        float64
+	TempTime         string  `json:"created"`
+	DeviceIp         string  `json:"device_ip"`
+	GoogleAid        string  `json:"google_aid"`
+	WindowsAid       string  `json:"windows_aid"`
+	IosIfa           string  `json:"ios_ifa"`
+	Language         string  `json:"language"`
+	StatInstallId    string  `json:"stat_install_id"`
+	StatClickId      string  `json:"stat_click_id"`
+	StatImpressionId string  `json:"stat_impression_id"`
+	CurrencyCode     string  `json:"currency_code"`
+	SiteId           int64   `json:"site_id"`
+	AdvertiserId     int64   `json:"advertiser_id"`
+	PackageName      string  `json:"package_name"`
+	PublisherId      int64   `json:"publisher_id"`
+	AdNetworkId      int64   `json:"ad_network_id"`
+	AgencyId         int64   `json:"agency_id"`
+	CampaignId       int64   `json:"campaign_id"`
+	CountryCode      string  `json:"country_code"`
+	RegionCode       string  `json:"region_code"`
+	PostalCode       int32   `json:"postal_code"`
+	WurflBrandName   string  `json:"wurfl_brand_name"`
+	WurflModelName   string  `json:"wurfl_model_name"`
+	WurflDeviceOs    string  `json:"wurfl_device_os"`
+	PublisherUserId  string  `json:"publisher_user_id"`
+	Latitude         float64 `json:"latitude"`
+	Longitude        float64 `json:"longitude"`
 }
-
-//code trash :
-
-// 	//***********************special case: if event happen beofre both click/install, well actually it is rare***********************//
-// 	//find related impression or click from inner struct of open/events, put the click back to outside,
-// 	//I decide not to put all related events and opens back to this install because it is really rare and instead, I would put ttl
-// 	//on both parent and children of events /opens if they are post alone
-
-// 	QueryOne := elastic.NewTermQuery("Click.Id", installUni.StatClickId)
-// 	QueryTwo := elastic.NewTermQuery("Impression.Id", installUni.StatImpressionId)
-// 	searchEvents, _ := client.Search().Index("alls").Type("Event").Query(&QueryOne).From(0).Size(1).Do()
-// 	if searchEvents.TotalHits() == 0 {
-// 		searchEvents, _ = client.Search().Index("alls").Type("Event").Query(&QueryTwo).From(0).Size(1).Do()
-// 		if searchEvents.TotalHits() == 0 {
-
-// 		} else {
-// 			hit := searchEvents.Hits.Hits[0]
-// 			var event Event
-// 			json.Unmarshal(*hit.Source, &event)
-// 			impression:= event.Impression
-// 			//update the click id inside of common one
-// 			var update UpdateImpression
-// 			update.Impression = impression.Id
-// 			client.Update().Index("alls").Type("Common").Id(parentId).Doc(update).Do()
-// 			//get the click struct out from event to install
-// 			client.Index().Index("alls").Type("Click").Parent(parentId).BodyJson(click).Do()
-// 		}
-// 	} else {
-// 		hit := searchEvents.Hits.Hits[0]
-// 		var event Event
-// 		json.Unmarshal(*hit.Source, &event)
-// 		click := event.Click
-// 		//update the click id inside of common one
-// 		var update UpdateClickId
-// 		update.ClickInstallId = click.Id
-// 		client.Update().Index("alls").Type("Common").Id(parentId).Doc(update).Do()
-// 		//get the click struct out from event to install
-// 		client.Index().Index("alls").Type("Click").Parent(parentId).BodyJson(click).Do()
-
-// 	}
-
-// }

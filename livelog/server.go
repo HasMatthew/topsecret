@@ -35,13 +35,12 @@ func init() {
 		fmt.Println(err)
 	}
 
-	// //Setup debug logging
-	// client.SetTraceLog(log.New(os.Stdout, "", log.LstdFlags))
-
-	//log message to rsyslog file
+	//log debug message to rsyslog file
 	structured.AddHookToSyslog("tcp", "localhost:10514", syslog.LOG_EMERG, "live===log")
-	//log message to os standard
+	//log debug message to os standard
 	structured.SetOutput(os.Stderr)
+	//log debug message to elasticsearch
+	structured.AddHookToElasticsearch("dp-kewei01-dev.sea1.office.priv", "9200", "debug", "log", "")
 }
 
 // build/lauch the server and prepare to write logs
@@ -78,7 +77,7 @@ func POST(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	//find the log type
+	//find the log types
 	logType := allFields.LogType
 
 	if logType == "impress" {
@@ -143,8 +142,12 @@ func click(allFields AllFields) {
 			var update UpdateClick
 			update.Click = uniFields
 			docId := hit.Id
-			_, err := client.Update().Index("alls").Type("Event").Id(docId).Doc(update).Do()
-			fmt.Println(err)
+
+			//get the parent id
+			var event Acticity
+			json.Unmarshal(*hit.Source, &event)
+
+			client.Update().Index("alls").Type("Event").Parent(event.ParentId).Id(docId).Doc(update).Do()
 
 		}
 
@@ -154,7 +157,12 @@ func click(allFields AllFields) {
 			var update UpdateClick
 			update.Click = uniFields
 			docId := hit.Id
-			client.Update().Index("alls").Type("Open").Id(docId).Doc(update).Do()
+
+			//get the parent id
+			var open Acticity
+			json.Unmarshal(*hit.Source, &open)
+
+			client.Update().Index("alls").Type("Open").Parent(open.ParentId).Id(docId).Doc(update).Do()
 		}
 
 		//************if there is no install and no matter whether it found a event/open, post the click
@@ -226,7 +234,7 @@ func impression(allFields AllFields) {
 	} else if searchResult.TotalHits() == 0 {
 		//************find no install--- find the event and open first *****impression id always exists
 
-		termQuery = elastic.NewTermQuery("StatImpression", uniFields.Id)
+		termQuery = elastic.NewTermQuery("StatImpressionId", uniFields.Id)
 
 		//update the events to have reengaement impression struct
 		searchEvent, _ := client.Search().Index("alls").Type("Event").Query(&termQuery).Pretty(true).Do()
@@ -234,7 +242,11 @@ func impression(allFields AllFields) {
 			var update UpdateImpression
 			update.Impression = uniFields
 			docId := hit.Id
-			client.Update().Index("alls").Type("Event").Id(docId).Doc(update).Do()
+
+			//get the parent id
+			var event Acticity
+			json.Unmarshal(*hit.Source, &event)
+			client.Update().Index("alls").Type("Event").Parent(event.ParentId).Id(docId).Doc(update).Do()
 
 		}
 
@@ -244,7 +256,11 @@ func impression(allFields AllFields) {
 			var update UpdateImpression
 			update.Impression = uniFields
 			docId := hit.Id
-			client.Update().Index("alls").Type("Open").Id(docId).Doc(update).Do()
+
+			//get the parent id
+			var open Acticity
+			json.Unmarshal(*hit.Source, &open)
+			client.Update().Index("alls").Type("Open").Parent(open.ParentId).Id(docId).Doc(update).Do()
 		}
 
 		//************if there is no install and no matter whether it found a event/open, post the impression
@@ -420,6 +436,7 @@ func helper(allFields AllFields, eventType string) {
 			noHit = false
 			hit := searchResult.Hits.Hits[0]
 			parentId := hit.Id
+			event.ParentId = parentId //event need to own a parent id and for later update
 
 			//unmarhsal the parent
 			var parent Common
@@ -440,10 +457,10 @@ func helper(allFields AllFields, eventType string) {
 						event.Click = found
 
 						//put the event as a child
-						client.Index().Index("alls").Type(eventType).Parent(parentId).BodyJson(event).Do() /////////
+						client.Index().Index("alls").Type(eventType).Parent(parentId).BodyJson(event).Do()
 
 					} else {
-						structured.Warn(event.Id, eventType, "this event/open has multiple clicks related to it ", int(allFields.SiteId), nil) /////////
+						structured.Warn(event.Id, eventType, "this event/open has multiple clicks related to it ", int(allFields.SiteId), nil)
 					}
 				}
 
@@ -462,10 +479,10 @@ func helper(allFields AllFields, eventType string) {
 						event.Impression = found
 
 						//put the event as a child
-						client.Index().Index("alls").Type(eventType).Parent(parentId).BodyJson(event).Do() ////////
+						client.Index().Index("alls").Type(eventType).Parent(parentId).BodyJson(event).Do()
 
 					} else {
-						structured.Warn(event.Id, eventType, "this event/open has multiple impression related to it ", int(allFields.SiteId), nil) ///////
+						structured.Warn(event.Id, eventType, "this event/open has multiple impression related to it ", int(allFields.SiteId), nil)
 					}
 				}
 
@@ -473,11 +490,11 @@ func helper(allFields AllFields, eventType string) {
 
 			if nohitClickImp {
 				//if the event no related with any click or impresssion
-				client.Index().Index("alls").Type(eventType).Parent(parentId).BodyJson(event).Do() ////////////
+				client.Index().Index("alls").Type(eventType).Parent(parentId).BodyJson(event).Do()
 			}
 
 		} else if searchResult.TotalHits() > 1 {
-			structured.Warn(event.Id, eventType, "has multiple event/open contributed to that", int(allFields.SiteId), nil) //////////
+			structured.Warn(event.Id, eventType, "has multiple event/open contributed to that", int(allFields.SiteId), nil)
 		}
 
 		//else is no hit with current install leave nohit to be true
@@ -502,6 +519,7 @@ func helper(allFields AllFields, eventType string) {
 
 		indexParent, _ := client.Index().Index("alls").Type("Common").BodyJson(common).Do()
 		parentId := indexParent.Id
+		event.ParentId = parentId //event need to own a parent id and for later update
 
 		client.Index().Index("alls").Type(eventType).Parent(parentId).BodyJson(event).Do() ///////////
 	}
@@ -608,6 +626,7 @@ type Acticity struct {
 	WurflBrandName   string
 	WurflModelName   string
 	WurflDeviceOs    string
+	ParentId         string
 	Click            Click
 	Impression       Impression
 }

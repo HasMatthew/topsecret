@@ -157,6 +157,10 @@ PUT /indexes
                         "type": "string",
                          "index": "not_analyzed"
                      },
+                      "ParentId":{
+"type": "string",
+                         "index": "not_analyzed"
+                        },
                      "Impression": {
                         "properties": {
                            "CountryCode": {
@@ -366,6 +370,10 @@ PUT /indexes
                         "type": "string",
                          "index": "not_analyzed"
                      },
+                     "ParentId":{
+"type": "string",
+                         "index": "not_analyzed"
+                        },
                      "Impression": {
                         "properties": {
                            "CountryCode": {

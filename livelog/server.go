@@ -290,7 +290,7 @@ func impression(allFields AllFields) {
 		client.Index().Index("alls").Type("Impression").Parent(parentId).BodyJson(uniFields).Do() /////
 
 	} else {
-		//*************find multiple install related to this click
+		//********find multiple install related to this click
 		structured.Warn(uniFields.Id, "Impression", "the impression has multiple install contributed to it ", int(allFields.SiteId), nil) /////
 	}
 }

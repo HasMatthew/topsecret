@@ -10,7 +10,6 @@ import (
 	"log/syslog"
 	"net/http"
 	"os"
-	"strconv"
 	"time"
 
 	"github.com/MobileAppTracking/measurement/lib/structured"
@@ -105,7 +104,9 @@ func click(allFields AllFields) {
 	uniFields.CountryCode = allFields.CountryCode
 	uniFields.RegionCode = allFields.RegionCode
 	uniFields.PostalCode = allFields.PostalCode
-	uniFields.Location = strconv.FormatFloat(allFields.Latitude, 'E', -1, 64) + "," + strconv.FormatFloat(allFields.Longitude, 'E', -1, 64)
+	if !(allFields.Latitude == "" && allFields.Longitude == "") {
+		uniFields.Location = allFields.Latitude + "," + allFields.Longitude
+	}
 	uniFields.WurflBrandName = allFields.WurflBrandName
 	uniFields.WurflModelName = allFields.WurflModelName
 	uniFields.WurflDeviceOs = allFields.WurflDeviceOs
@@ -207,7 +208,9 @@ func impression(allFields AllFields) {
 	uniFields.CountryCode = allFields.CountryCode
 	uniFields.RegionCode = allFields.RegionCode
 	uniFields.PostalCode = allFields.PostalCode
-	uniFields.Location = strconv.FormatFloat(allFields.Latitude, 'E', -1, 64) + "," + strconv.FormatFloat(allFields.Longitude, 'E', -1, 64)
+	if !(allFields.Latitude == "" && allFields.Longitude == "") {
+		uniFields.Location = allFields.Latitude + "," + allFields.Longitude
+	}
 	uniFields.WurflBrandName = allFields.WurflBrandName
 	uniFields.WurflModelName = allFields.WurflModelName
 	uniFields.WurflDeviceOs = allFields.WurflDeviceOs
@@ -308,7 +311,9 @@ func install(allFields AllFields) {
 	installUni.CountryCode = allFields.CountryCode
 	installUni.RegionCode = allFields.RegionCode
 	installUni.PostalCode = allFields.PostalCode
-	installUni.Location = strconv.FormatFloat(allFields.Latitude, 'E', -1, 64) + "," + strconv.FormatFloat(allFields.Longitude, 'E', -1, 64)
+	if !(allFields.Latitude == "" && allFields.Longitude == "") {
+		installUni.Location = allFields.Latitude + "," + allFields.Longitude
+	}
 	installUni.WurflBrandName = allFields.WurflBrandName
 	installUni.WurflModelName = allFields.WurflModelName
 	installUni.WurflDeviceOs = allFields.WurflDeviceOs
@@ -419,7 +424,9 @@ func helper(allFields AllFields, eventType string) {
 	event.CountryCode = allFields.CountryCode
 	event.RegionCode = allFields.RegionCode
 	event.PostalCode = allFields.PostalCode
-	event.Location = strconv.FormatFloat(allFields.Latitude, 'E', -1, 64) + "," + strconv.FormatFloat(allFields.Longitude, 'E', -1, 64)
+	if !(allFields.Latitude == "" && allFields.Longitude == "") {
+		event.Location = allFields.Latitude + "," + allFields.Longitude
+	}
 	event.WurflBrandName = allFields.WurflBrandName
 	event.WurflDeviceOs = allFields.WurflDeviceOs
 	event.WurflModelName = allFields.WurflModelName
@@ -635,30 +642,30 @@ type AllFields struct {
 	LogType          string `json:"log_type"`
 	Id               string `json:"id"`
 	Created          time.Time
-	TempTime         string  `json:"created"`
-	DeviceIp         string  `json:"device_ip"`
-	GoogleAid        string  `json:"google_aid"`
-	WindowsAid       string  `json:"windows_aid"`
-	IosIfa           string  `json:"ios_ifa"`
-	Language         string  `json:"language"`
-	StatInstallId    string  `json:"stat_install_id"`
-	StatClickId      string  `json:"stat_click_id"`
-	StatImpressionId string  `json:"stat_impression_id"`
-	CurrencyCode     string  `json:"currency_code"`
-	SiteId           int64   `json:"site_id"`
-	AdvertiserId     int64   `json:"advertiser_id"`
-	PackageName      string  `json:"package_name"`
-	PublisherId      int64   `json:"publisher_id"`
-	AdNetworkId      int64   `json:"ad_network_id"`
-	AgencyId         int64   `json:"agency_id"`
-	CampaignId       int64   `json:"campaign_id"`
-	CountryCode      string  `json:"country_code"`
-	RegionCode       string  `json:"region_code"`
-	PostalCode       int32   `json:"postal_code"`
-	WurflBrandName   string  `json:"wurfl_brand_name"`
-	WurflModelName   string  `json:"wurfl_model_name"`
-	WurflDeviceOs    string  `json:"wurfl_device_os"`
-	PublisherUserId  string  `json:"publisher_user_id"`
-	Latitude         float64 `json:"latitude"`
-	Longitude        float64 `json:"longitude"`
+	TempTime         string `json:"created"`
+	DeviceIp         string `json:"device_ip"`
+	GoogleAid        string `json:"google_aid"`
+	WindowsAid       string `json:"windows_aid"`
+	IosIfa           string `json:"ios_ifa"`
+	Language         string `json:"language"`
+	StatInstallId    string `json:"stat_install_id"`
+	StatClickId      string `json:"stat_click_id"`
+	StatImpressionId string `json:"stat_impression_id"`
+	CurrencyCode     string `json:"currency_code"`
+	SiteId           int64  `json:"site_id"`
+	AdvertiserId     int64  `json:"advertiser_id"`
+	PackageName      string `json:"package_name"`
+	PublisherId      int64  `json:"publisher_id"`
+	AdNetworkId      int64  `json:"ad_network_id"`
+	AgencyId         int64  `json:"agency_id"`
+	CampaignId       int64  `json:"campaign_id"`
+	CountryCode      string `json:"country_code"`
+	RegionCode       string `json:"region_code"`
+	PostalCode       int32  `json:"postal_code"`
+	WurflBrandName   string `json:"wurfl_brand_name"`
+	WurflModelName   string `json:"wurfl_model_name"`
+	WurflDeviceOs    string `json:"wurfl_device_os"`
+	PublisherUserId  string `json:"publisher_user_id"`
+	Latitude         string `json:"latitude"`
+	Longitude        string `json:"longitude"`
 }

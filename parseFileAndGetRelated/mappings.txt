@@ -1,0 +1,136 @@
+PUT /alldata
+{
+ 
+      "mappings": {
+         "clinstall": {
+            "properties": {
+               "Ad_network_id": {
+                  "type": "long"
+               },
+               "Advertiser_id": {
+                  "type": "long"
+               },
+               "App_name": {
+                  "type": "string"
+               },
+               "Campaign_id": {
+                  "type": "long"
+               },
+               "Clicks": {
+                  "properties": {
+                     "Created": {
+                        "type": "date",
+                        "format": "dateOptionalTime"
+                     },
+                     "Device_ip": {
+                        "type": "string"
+                     },
+                     "Id": {
+                        "type": "string",
+                        "index": "not_analyzed"
+                     },
+                     "Location" : {
+                         "type" : "geo_point"
+                     },
+                    
+                     "Modified": {
+                        "type": "date",
+                        "format": "dateOptionalTime"
+                     },
+                     "Publisher_ref_id": {
+                        "type": "string"
+                     },
+                     "Request_url": {
+                        "type": "string"
+                     },
+                     "Tracking_id": {
+                        "type": "string"
+                     },
+                     "User_agent": {
+                        "type": "string"
+                     }
+                  }
+               },
+               "Country_id": {
+                  "type": "long"
+               },
+               "Device_carrier": {
+                  "type": "string"
+               },
+               "Installs": {
+                  "properties": {
+                     "Created": {
+                        "type": "date",
+                        "format": "dateOptionalTime"
+                     },
+                     "Device_ip": {
+                        "type": "string"
+                     },
+                     "Id": {
+                        "type": "string"
+                     },
+                     "Install_date": {
+                        "type": "date",
+                        "format": "dateOptionalTime"
+                     },
+                     "Location" : {
+                         "type" : "geo_point"
+                     },
+                     "Match_type": {
+                        "type": "string"
+                     },
+                     "Modified": {
+                        "type": "date",
+                        "format": "dateOptionalTime"
+                     },
+                     "Publisher_ref_id": {
+                        "type": "string"
+                     },
+                     "Request_url": {
+                        "type": "string"
+                     },
+                     "Session_datetime": {
+                        "type": "date",
+                        "format": "dateOptionalTime"
+                     },
+                     "Session_ip": {
+                        "type": "string"
+                     },
+                     "Site_event_id": {
+                        "type": "long"
+                     },
+                     "Stat_click_id": {
+                        "type": "string",
+                        "index": "not_analyzed"
+                     },
+                     "Tracking_id": {
+                        "type": "string"
+                     },
+                     "User_agent": {
+                        "type": "string"
+                     }
+                  }
+               },
+               "Language": {
+                  "type": "string"
+               },
+               "Package_name": {
+                  "type": "string"
+               },
+               "Publisher_id": {
+                  "type": "long"
+               },
+               "Region_id": {
+                  "type": "long"
+               },
+               "Sdk": {
+                  "type": "string"
+               },
+               "Site_id": {
+                  "type": "long"
+               }
+            }
+         }
+      }
+   
+}

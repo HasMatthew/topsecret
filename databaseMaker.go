@@ -130,7 +130,7 @@ func generateLatency() int64 {
 func main() {
 
 	// define the url to post to in elasticSearch
-	url := "http://dp-joshp01-dev.sea1.office.priv:9200/database/mydata"
+	url := "http://dp-kewei01-dev.sea1.office.priv:9200/samples/ids"
 
 	// seed the random number generator to prevent repeated values each time the program runs
 	rand.Seed(time.Now().UTC().UnixNano())
